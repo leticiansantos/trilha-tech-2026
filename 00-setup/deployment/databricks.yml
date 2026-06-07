@@ -1,0 +1,39 @@
+# Databricks Asset Bundle — Trilha Tech 2026 CBA
+# Provisiona o ambiente das 3 trilhas: importa os notebooks e cria um job que
+# carrega a camada gold canônica (cba_trilha_tech.gold.*).
+#
+# Uso:
+#   databricks bundle validate -t dev
+#   databricks bundle deploy   -t dev
+#   databricks bundle run setup_gold -t dev
+#
+# (O upload dos CSVs para o Volume é feito pelo deploy.sh, antes do run.)
+bundle:
+  name: cba-trilha-tech-2026
+
+variables:
+  catalog:
+    description: Catálogo Unity Catalog das trilhas
+    default: cba_trilha_tech
+
+targets:
+  dev:
+    mode: development
+    default: true
+    # Ajuste o host para o workspace de testes da CBA (ou use --profile no CLI)
+    workspace:
+      root_path: /Workspace/Shared/cba-trilha-tech-2026
+
+resources:
+  jobs:
+    setup_gold:
+      name: "[CBA] Setup camada GOLD - Trilha Tech 2026"
+      tasks:
+        - task_key: load_gold
+          notebook_task:
+            notebook_path: ./setup_load_gold.py
+            base_parameters:
+              catalog: ${var.catalog}
+          # Serverless por padrão; se o workspace não tiver, troque por job_cluster.
+      queue:
+        enabled: true

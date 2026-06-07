@@ -1,0 +1,19 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Dados gerados (recriáveis via 00-setup/data-generation)
+00-setup/data-generation/output/
+00-setup/data-generation/output_test/
+*.parquet
+
+# Databricks
+.databricks/
+*.egg-info/
+
+# SO / editor
+.DS_Store
+.idea/
+.vscode/

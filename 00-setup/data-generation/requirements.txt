@@ -1,0 +1,8 @@
+# Trilha Tech 2026 CBA - geração de dados sintéticos
+polars>=1.0.0
+numpy>=1.26.0
+pyarrow>=15.0.0
+mimesis>=18.0.0
+# API mock de mercado (trilha de Engenharia)
+fastapi>=0.110.0
+uvicorn>=0.29.0
