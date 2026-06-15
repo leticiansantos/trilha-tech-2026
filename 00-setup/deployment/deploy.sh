@@ -10,24 +10,29 @@
 #   5. roda o job que carrega a camada gold canônica
 #
 # Pré-requisitos:
-#   - Databricks CLI v0.2x+ autenticado:  databricks auth login --host <WORKSPACE_URL>
-#   - Dados gerados:  (cd ../data-generation && python generate_synthetic_data.py)
+#   - Databricks CLI v0.2x+:  brew install databricks/tap/databricks
+#     autenticado com:        databricks auth login --host <WORKSPACE_URL>
+#   - Terraform v1.0+:        brew install terraform
+#     (necessário para bundle deploy: CLI usa DATABRICKS_TF_EXEC_PATH para evitar download com chave PGP expirada)
+#   - Dados gerados:          (cd ../data-generation && python generate_synthetic_data.py)
 #
 # Uso:
-#   ./deploy.sh [DATABRICKS_PROFILE] [CATALOG]
+#   ./deploy.sh [DATABRICKS_PROFILE] [CATALOG] [CATALOG_LOCATION]
 #   ex.:  ./deploy.sh cba cba_trilha_tech
+#   ex. (sem storage root):  ./deploy.sh cba cba_trilha_tech "abfss://container@account.dfs.core.windows.net/cba"
 # =============================================================================
 set -euo pipefail
 
 PROFILE="${1:-DEFAULT}"
 CATALOG="${2:-cba_trilha_tech}"
+CATALOG_LOCATION="${3:-}"
 RAW_SCHEMA="raw"
 VOLUME="landing"
 VOLUME_PATH="/Volumes/${CATALOG}/${RAW_SCHEMA}/${VOLUME}"
 DATA_DIR="$(cd "$(dirname "$0")/../data-generation/output" && pwd)"
 DBX="databricks --profile ${PROFILE}"
 
-echo "==> Perfil: ${PROFILE} | Catálogo: ${CATALOG}"
+echo "==> Perfil: ${PROFILE} | Catálogo: ${CATALOG}${CATALOG_LOCATION:+ | Location: ${CATALOG_LOCATION}}"
 
 # 1. valida auth
 echo "==> Validando autenticação..."
@@ -51,17 +56,26 @@ for f in "${DATA_DIR}"/*.csv "${DATA_DIR}"/*.parquet; do
 done
 # amostra para o módulo "subir CSV" da Trilha 1
 if [ -f "${DATA_DIR}/sample/furnace_telemetry_sample.csv" ]; then
+  ${DBX} fs mkdir "dbfs:${VOLUME_PATH}/sample" 2>/dev/null || true
   ${DBX} fs cp "${DATA_DIR}/sample/furnace_telemetry_sample.csv" \
       "dbfs:${VOLUME_PATH}/sample/furnace_telemetry_sample.csv" --overwrite
 fi
 
 # 4. deploy do bundle
 echo "==> Deploy do bundle (notebooks + job)..."
-( cd "$(dirname "$0")" && ${DBX} bundle validate -t dev && ${DBX} bundle deploy -t dev )
+TF_BIN="$(which terraform)"
+TF_VER="$(terraform version -json | python3 -c 'import sys,json; print(json.load(sys.stdin)["terraform_version"])')"
+( cd "$(dirname "$0")" && \
+  DATABRICKS_TF_EXEC_PATH="${TF_BIN}" DATABRICKS_TF_VERSION="${TF_VER}" ${DBX} bundle validate -t dev && \
+  DATABRICKS_TF_EXEC_PATH="${TF_BIN}" DATABRICKS_TF_VERSION="${TF_VER}" ${DBX} bundle deploy -t dev )
 
 # 5. roda a carga da gold
 echo "==> Carregando a camada GOLD canônica..."
-( cd "$(dirname "$0")" && ${DBX} bundle run setup_gold -t dev )
+BUNDLE_RUN_ARGS="-t dev"
+if [ -n "${CATALOG_LOCATION}" ]; then
+  BUNDLE_RUN_ARGS="${BUNDLE_RUN_ARGS} --var=catalog_location=${CATALOG_LOCATION}"
+fi
+( cd "$(dirname "$0")" && ${DBX} bundle run setup_gold ${BUNDLE_RUN_ARGS} )
 
 echo "==> Concluído. Ambiente pronto em '${CATALOG}'."
 echo "    gold: ${CATALOG}.gold.*  |  raw volume: ${VOLUME_PATH}"

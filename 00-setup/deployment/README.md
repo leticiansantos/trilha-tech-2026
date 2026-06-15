@@ -21,9 +21,22 @@ cba_trilha_tech (catálogo)
 - **Trilha 1 (Engenharia):** alunos leem `raw.landing` e constroem bronze→silver→gold no seu schema pessoal `ws_<user>`. A camada `gold` serve de gabarito/referência.
 - **Trilhas 2 (MLOps) e 3 (Insights):** leem direto de `cba_trilha_tech.gold.*` (não dependem do output de cada aluno na Trilha 1).
 
+## Pré-requisitos (instalar uma vez na máquina local)
+
+| Ferramenta | Instalação | Verificação |
+|---|---|---|
+| **Python 3.10+** | já instalado ou `brew install python` | `python3 --version` |
+| **Databricks CLI v0.2x+** | `brew install databricks/tap/databricks` | `databricks --version` |
+| **Terraform v1.0+** | `brew install terraform` | `terraform version` |
+
+> **Por que Terraform?** O bundle deploy usa Terraform internamente. A versão embutida no CLI tem um problema de chave PGP expirada; o script usa o Terraform local como workaround.
+
 ## Passo a passo
 
 ```bash
+# 0. instalar pré-requisitos (se ainda não tiver)
+brew install databricks/tap/databricks terraform
+
 # 1. gerar os dados
 cd ../data-generation
 python3 -m venv venv && source venv/bin/activate
@@ -38,8 +51,25 @@ cd ../deployment
 ./deploy.sh <PROFILE> cba_trilha_tech
 ```
 
+### Parâmetro opcional: `CATALOG_LOCATION`
+
+Por padrão, o catálogo é criado usando o **Default Storage** do metastore Unity Catalog. Se o metastore do workspace não tiver um storage root URL configurado, passe o caminho do cloud storage como 3º argumento:
+
+```bash
+# Azure Data Lake Storage
+./deploy.sh <PROFILE> cba_trilha_tech "abfss://container@storageaccount.dfs.core.windows.net/cba"
+
+# AWS S3
+./deploy.sh <PROFILE> cba_trilha_tech "s3://bucket-name/cba"
+
+# Google Cloud Storage
+./deploy.sh <PROFILE> cba_trilha_tech "gs://bucket-name/cba"
+```
+
+> **Como saber se preciso?** Se o deploy falhar com `Metastore storage root URL does not exist`, é necessário passar o `CATALOG_LOCATION`. O caminho pode ser encontrado no workspace em **Settings → Unity Catalog → Storage credentials** ou com o admin da conta.
+
 Alternativa manual (sem o script): suba os arquivos de `data-generation/output/` para o
-Volume `raw.landing` e rode o notebook `setup_load_gold.py` (ou `databricks bundle run setup_gold -t dev`).
+Volume `raw.landing` e rode o notebook `setup_load_gold.py` com o parâmetro `catalog_location` preenchido se necessário (ou `databricks bundle run setup_gold -t dev --var=catalog_location=<path>`).
 
 ## Validação
 

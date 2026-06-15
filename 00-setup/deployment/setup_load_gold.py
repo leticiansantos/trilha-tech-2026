@@ -17,17 +17,29 @@
 
 # DBTITLE 1,Parâmetros
 dbutils.widgets.text("catalog", "cba_trilha_tech", "Catálogo")
+dbutils.widgets.text("catalog_location", "", "Storage location (deixe vazio para usar o default do metastore)")
 CATALOG = dbutils.widgets.get("catalog")
+CATALOG_LOCATION = dbutils.widgets.get("catalog_location").strip()
 RAW_SCHEMA = "raw"
 GOLD_SCHEMA = "gold"
 VOLUME = "landing"
 VOLUME_PATH = f"/Volumes/{CATALOG}/{RAW_SCHEMA}/{VOLUME}"
 print(f"Catálogo: {CATALOG} | Volume: {VOLUME_PATH}")
+if CATALOG_LOCATION:
+    print(f"Storage location: {CATALOG_LOCATION}")
 
 # COMMAND ----------
 
 # DBTITLE 1,Catálogo, schemas e Volume
-spark.sql(f"CREATE CATALOG IF NOT EXISTS {CATALOG}")
+existing_catalogs = [r.catalog for r in spark.sql("SHOW CATALOGS").collect()]
+if CATALOG not in existing_catalogs:
+    if CATALOG_LOCATION:
+        spark.sql(f"CREATE CATALOG {CATALOG} MANAGED LOCATION '{CATALOG_LOCATION}'")
+    else:
+        spark.sql(f"CREATE CATALOG {CATALOG} MANAGED LOCATION ''")
+    print(f"Catálogo {CATALOG} criado.")
+else:
+    print(f"Catálogo {CATALOG} já existe, pulando criação.")
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{RAW_SCHEMA}")
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{GOLD_SCHEMA}")
 spark.sql(f"CREATE VOLUME IF NOT EXISTS {CATALOG}.{RAW_SCHEMA}.{VOLUME}")

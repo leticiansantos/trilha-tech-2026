@@ -15,6 +15,9 @@ variables:
   catalog:
     description: Catálogo Unity Catalog das trilhas
     default: cba_trilha_tech
+  catalog_location:
+    description: "Storage location para o catálogo (ex: abfss://... ou s3://...). Vazio = usa default do metastore."
+    default: ""
 
 targets:
   dev:
@@ -22,7 +25,7 @@ targets:
     default: true
     # Ajuste o host para o workspace de testes da CBA (ou use --profile no CLI)
     workspace:
-      root_path: /Workspace/Shared/cba-trilha-tech-2026
+      root_path: ~/cba-trilha-tech-2026
 
 resources:
   jobs:
@@ -34,6 +37,7 @@ resources:
             notebook_path: ./setup_load_gold.py
             base_parameters:
               catalog: ${var.catalog}
+              catalog_location: ${var.catalog_location}
           # Serverless por padrão; se o workspace não tiver, troque por job_cluster.
       queue:
         enabled: true
