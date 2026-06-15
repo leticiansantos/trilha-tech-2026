@@ -25,7 +25,11 @@ RAW_SCHEMA = "raw"
 username = spark.sql("SELECT current_user()").collect()[0][0]
 user_schema = "ws_" + username.split("@")[0].replace(".", "_").replace("-", "_")
 
-spark.sql(f"CREATE CATALOG IF NOT EXISTS {CATALOG}")
+# Verifica se o catálogo já existe
+catalogs = [row.catalog for row in spark.sql("SHOW CATALOGS").collect()]
+if CATALOG not in catalogs:
+    spark.sql(f"CREATE CATALOG {CATALOG} MANAGED LOCATION ''")
+
 spark.sql(f"USE CATALOG {CATALOG}")
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{user_schema}")
 spark.sql(f"USE SCHEMA {user_schema}")

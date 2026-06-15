@@ -59,7 +59,9 @@ print(f"🙋 Seu schema ...: {user_schema}  (só seu)")
 
 # COMMAND ----------
 
-spark.sql(f"CREATE CATALOG IF NOT EXISTS {CATALOG}")
+catalogos = [row.catalog for row in spark.sql("SHOW CATALOGS").collect()]
+if CATALOG not in catalogos:
+    spark.sql(f"CREATE CATALOG IF NOT EXISTS {CATALOG}")
 spark.sql(f"USE CATALOG {CATALOG}")
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{RAW_SCHEMA}")
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{user_schema}")

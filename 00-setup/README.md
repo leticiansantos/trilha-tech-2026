@@ -3,6 +3,14 @@
 Faça isto **uma vez**, antes dos workshops. Cria o catálogo `cba_trilha_tech`, gera os dados
 sintéticos e carrega a camada `gold` que as trilhas consomem.
 
+## Pré-requisitos (instalar uma vez)
+
+```bash
+brew install databricks/tap/databricks   # Databricks CLI v0.2x+
+brew install terraform                   # Terraform v1.0+  (necessário para bundle deploy)
+# Python 3.10+ já deve estar instalado; se não: brew install python
+```
+
 ## Passo 1 — Gerar os dados (local)
 ```bash
 cd data-generation
