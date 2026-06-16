@@ -7,8 +7,9 @@
 #   2. cria catálogo + schema raw + Volume landing
 #   3. sobe os CSVs sintéticos para o Volume
 #   4. sobe os notebooks das trilhas para /Workspace/Shared/cba-trilha-tech-2026/
-#   5. faz deploy do bundle (setup_load_gold.py + job)
-#   6. roda o job que carrega a camada gold canônica
+#   5. deploya a API mock de mercado como Databricks App e patcha a URL no notebook 05
+#   6. faz deploy do bundle (setup_load_gold.py + job)
+#   7. roda o job que carrega a camada gold canônica
 #
 # Pré-requisitos:
 #   - Databricks CLI v0.2x+:  brew install databricks/tap/databricks
@@ -33,6 +34,8 @@ VOLUME_PATH="/Volumes/${CATALOG}/${RAW_SCHEMA}/${VOLUME}"
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 DATA_DIR="${REPO_ROOT}/00-setup/data-generation/output"
 WS_NOTEBOOKS="/Workspace/Shared/cba-trilha-tech-2026"
+APP_NAME="cba-market-api"
+APP_WS_PATH="${WS_NOTEBOOKS}/market-api-app"
 DBX="databricks --profile ${PROFILE}"
 
 echo "==> Perfil: ${PROFILE} | Catálogo: ${CATALOG}${CATALOG_LOCATION:+ | Location: ${CATALOG_LOCATION}}"
@@ -75,6 +78,34 @@ for trilha in 01-engenharia 02-mlops 03-insights; do
   ${DBX} workspace import-dir "${nb_dir}" "${WS_NOTEBOOKS}/${trilha}/notebooks" --overwrite
 done
 
+# 5. deploy da API mock como Databricks App
+echo "==> Deploy da API mock de mercado como Databricks App..."
+${DBX} workspace import-dir "${REPO_ROOT}/00-setup/market-api-app" "${APP_WS_PATH}" --overwrite
+if ! ${DBX} apps get "${APP_NAME}" >/dev/null 2>&1; then
+  echo "   -> criando app ${APP_NAME}..."
+  ${DBX} apps create "${APP_NAME}"
+else
+  echo "   -> app ${APP_NAME} já existe"
+fi
+${DBX} apps deploy "${APP_NAME}" --source-code-path "${APP_WS_PATH}"
+APP_URL=$(${DBX} apps get "${APP_NAME}" --output json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('url',''))" 2>/dev/null || echo "")
+echo "   App URL: ${APP_URL:-'(aguardando start — consulte a UI em Apps)'}"
+
+# 5b. patch no notebook 05 com a URL real do app e re-upload
+NB05_SRC="${REPO_ROOT}/01-engenharia/notebooks/05_market_api_ingest.py"
+NB05_WS="${WS_NOTEBOOKS}/01-engenharia/notebooks/05_market_api_ingest"
+if [ -n "${APP_URL}" ] && [ -f "${NB05_SRC}" ]; then
+  echo "==> Atualizando notebook 05 com URL do app: ${APP_URL}"
+  NB05_TMP=$(mktemp /tmp/05_market_api_ingest_XXXXXX)
+  sed "s|http://localhost:8000|${APP_URL}|g" "${NB05_SRC}" > "${NB05_TMP}"
+  ${DBX} workspace import "${NB05_WS}" \
+    --file "${NB05_TMP}" --format SOURCE --language PYTHON --overwrite
+  rm -f "${NB05_TMP}"
+  echo "   -> notebook 05 re-uploaded com URL correta"
+else
+  echo "   -> URL do app não disponível ainda; notebook 05 usa widget api_base (padrão: localhost:8000)"
+fi
+
 # 6. deploy do bundle
 echo "==> Deploy do bundle (setup_load_gold + job)..."
 TF_BIN="$(which terraform)"
@@ -94,3 +125,4 @@ fi
 echo "==> Concluído. Ambiente pronto em '${CATALOG}'."
 echo "    gold: ${CATALOG}.gold.*  |  raw volume: ${VOLUME_PATH}"
 echo "    notebooks: ${WS_NOTEBOOKS}/"
+echo "    market API: ${APP_URL:-"databricks apps get ${APP_NAME} (verifique a URL na UI)"}"
