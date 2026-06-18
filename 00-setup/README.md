@@ -5,29 +5,58 @@ sintéticos e carrega a camada `gold` que as trilhas consomem.
 
 ## Pré-requisitos (instalar uma vez)
 
+**macOS / Linux**
 ```bash
 brew install databricks/tap/databricks   # Databricks CLI v0.2x+
 brew install terraform                   # Terraform v1.0+  (necessário para bundle deploy)
 # Python 3.10+ já deve estar instalado; se não: brew install python
 ```
 
+**Windows (PowerShell como Administrador)**
+```powershell
+winget install Python.Python.3 Databricks.DatabricksCLI Hashicorp.Terraform
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned  # liberar scripts
+```
+
 ## Passo 1 — Gerar os dados (local)
+
+**macOS / Linux**
 ```bash
 cd data-generation
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 python generate_synthetic_data.py        # cria CSVs/Parquet em output/
 ```
+
+**Windows (PowerShell)**
+```powershell
+cd data-generation
+python -m venv venv; .\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python generate_synthetic_data.py
+```
+
 Detalhes e dicionário de dados em [`data-generation/README.md`](data-generation/README.md).
 
 ## Passo 2 — Provisionar no workspace
-```bash
-# autenticar o CLI no workspace de testes da CBA
-databricks auth login --host https://<workspace-cba>.cloud.databricks.com
 
+```bash
+# autenticar o CLI (igual em todos os sistemas)
+databricks auth login --host https://<workspace-cba>.cloud.databricks.com
+```
+
+**macOS / Linux**
+```bash
 cd ../deployment
 ./deploy.sh <PROFILE> cba_trilha_tech     # sobe os dados, deploya o bundle e carrega a gold
 ```
+
+**Windows (PowerShell)**
+```powershell
+cd ..\deployment
+.\deploy.ps1 <PROFILE> cba_trilha_tech
+```
+
 Detalhes e arquitetura de dados em [`deployment/README.md`](deployment/README.md).
 
 ## Arquitetura de dados (resumo)
