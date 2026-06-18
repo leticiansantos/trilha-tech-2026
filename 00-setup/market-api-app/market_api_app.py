@@ -2,7 +2,7 @@
 Trilha Tech 2026 | CBA - API mock de mercado (Databricks App)
 =============================================================
 Serve os dados de preco do aluminio (LME) e cambio (USD/BRL)
-lendo diretamente do Volume Unity Catalog raw.landing.
+lendo diretamente do Volume Unity Catalog raw.landing via SDK.
 
 Endpoints:
     GET /aluminum/lme?start=2026-01-01&end=2026-03-31
@@ -11,13 +11,16 @@ Endpoints:
 """
 from __future__ import annotations
 
-from pathlib import Path
-
+import io
 import polars as pl
 from fastapi import FastAPI, Query
+from databricks.sdk import WorkspaceClient
 
-# Lê do Volume Unity Catalog (acessível pelo Databricks App)
-VOLUME_PATH = Path("/Volumes/cba_trilha_tech/raw/landing")
+# Inicializa o cliente do SDK (se autentica automaticamente dentro do Databricks App)
+w = WorkspaceClient()
+
+# Caminho absoluto do Volume no Unity Catalog
+VOLUME_PATH = "/Volumes/cba_trilha_tech/raw/landing"
 
 app = FastAPI(
     title="CBA Market API (mock)",
@@ -27,12 +30,17 @@ app = FastAPI(
 
 
 def _load(name: str) -> pl.DataFrame:
-    path = VOLUME_PATH / f"{name}.csv"
-    if not path.exists():
+    file_path = f"{VOLUME_PATH}/{name}.csv"
+    try:
+        # Baixa o streaming do arquivo do Volume utilizando o SDK oficial
+        response = w.files.download(file_path)
+        # Lê o conteúdo binário em memória diretamente com o Polars
+        return pl.read_csv(io.BytesIO(response.contents.read()))
+    except Exception as e:
         raise FileNotFoundError(
-            f"{path} nao encontrado. Verifique se o deploy.sh subiu os CSVs para o Volume."
+            f"Erro ao acessar {file_path} via Databricks SDK: {str(e)}. "
+            "Verifique as permissões de READ VOLUME do App."
         )
-    return pl.read_csv(path)
 
 
 def _filter(df: pl.DataFrame, start: str | None, end: str | None) -> list[dict]:
