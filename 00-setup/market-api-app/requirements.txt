@@ -1,4 +1,4 @@
 fastapi>=0.110.0
 uvicorn>=0.29.0
 polars>=1.0.0
-atabricks-sdk>=0.20.0
+databricks-sdk>=0.20.0

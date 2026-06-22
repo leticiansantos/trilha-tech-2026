@@ -25,6 +25,16 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ## 0. Instalação de dependências
+
+# COMMAND ----------
+
+# MAGIC %pip install databricks-automl-runtime
+# MAGIC dbutils.library.restartPython()
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ## 1. Configuração
 
 # COMMAND ----------

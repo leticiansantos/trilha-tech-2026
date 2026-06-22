@@ -30,7 +30,9 @@ spark.sql(f"USE SCHEMA {user_schema}")
 
 # URL da API mock — o instrutor informa o endereço (ex.: um serviço rodando ou Databricks App)
 # Ex.: "http://<host>:8000"  ou  "https://<app>.databricksapps.com"
-API_BASE = dbutils.widgets.get("api_base") if "api_base" in [w.name for w in dbutils.widgets.getAll()] else "http://localhost:8000"
+# API_BASE = dbutils.widgets.get("api_base") if "api_base" in [w.name for w in dbutils.widgets.getAll()] else "http://localhost:8000"
+
+API_BASE = "https://cba-market-api-7405605468532306.6.azure.databricksapps.com"
 print(f"API base: {API_BASE}")
 
 # COMMAND ----------
@@ -52,13 +54,49 @@ print(f"API base: {API_BASE}")
 # COMMAND ----------
 
 import requests
+from databricks.sdk import WorkspaceClient
 
+# 1. Inicializa o cliente do SDK para ler os metadados do App
+w = WorkspaceClient()
+
+# 2. Captura dinamicamente o ID de Cliente OAuth gerado para a sua API mock
+app_client_id = w.apps.get("cba-market-api").oauth2_app_client_id
+
+# 3. Recupera o token interno da sessão do notebook e a URL do workspace
+notebook_token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+workspace_url = w.config.host
+
+# 4. Executa o fluxo de Troca de Token (Token Exchange) exigido pelo proxy do App
+token_url = f"{workspace_url.rstrip('/')}/oidc/v1/token"
+exchange_data = {
+    "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+    "subject_token": notebook_token,
+    "subject_token_type": "urn:databricks:params:oauth:token-type:personal-access-token",
+    "requested_token_type": "urn:ietf:params:oauth:token-type:access_token",
+    "scope": "all-apis",
+    "audience": app_client_id,
+}
+
+print("==> Efetuando a troca de token por escopo de audiência (OAuth 2.0)...")
+token_response = requests.post(url=token_url, data=exchange_data)
+token_response.raise_for_status()
+
+# 5. Extrai o token de acesso exclusivo para o App e monta o cabeçalho
+audience_token = token_response.json()["access_token"]
+headers = {"Authorization": f"Bearer {audience_token}"}
+
+# 6. Faz a requisição para o endpoint da API ativa com o cabeçalho correto
 params = {"start": "2026-01-01", "end": "2026-03-31"}
+print(f"==> Executando chamada para: {API_BASE}/aluminum/lme")
 
-resp_lme = requests.get(f"{API_BASE}/aluminum/lme", params=params, timeout=30)
-resp_lme.raise_for_status()  # lança erro se status != 200
+resp_lme = requests.get(f"{API_BASE}/aluminum/lme", params=params, headers=headers, timeout=30)
+resp_lme.raise_for_status()
+
+
+# 7. Realiza o parse do JSON dos dados de mercado reais
 payload_lme = resp_lme.json()
 
+print("\n--- Dados Ingeridos com Sucesso ---")
 print("Fonte :", payload_lme["source"])
 print("Unidade:", payload_lme["unit"])
 print("Registros:", payload_lme["count"])
@@ -92,7 +130,7 @@ lme_df.orderBy("date").show(5)
 
 # COMMAND ----------
 
-resp_fx = requests.get(f"{API_BASE}/fx/usdbrl", params=params, timeout=30)
+resp_fx = requests.get(f"{API_BASE}/fx/usdbrl", params=params, headers=headers, timeout=30)
 resp_fx.raise_for_status()
 payload_fx = resp_fx.json()
 

@@ -174,14 +174,22 @@ print(f"✅ telemetry_gold_forno_dia: {spark.read.table('telemetry_gold_forno_di
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC -- Simula uma correção: zera a flag de imputação (apenas para gerar uma nova versão)
-# MAGIC UPDATE telemetry_silver SET vibration_imputada = false WHERE vibration_imputada = true;
-# MAGIC
-# MAGIC -- Quantas linhas tinham flag = true na VERSÃO 0 (antes do update)?
-# MAGIC SELECT COUNT(*) AS imputados_na_versao_0
-# MAGIC FROM telemetry_silver VERSION AS OF 0
-# MAGIC WHERE vibration_imputada = true;
+# Captura a versão atual (antes do UPDATE)
+versao_antes = spark.sql("DESCRIBE HISTORY telemetry_silver") \
+    .selectExpr("MAX(version)").collect()[0][0]
+print(f"Versão atual (antes do update): {versao_antes}")
+
+# Simula uma correção: zera a flag de imputação (gera nova versão)
+spark.sql("UPDATE telemetry_silver SET vibration_imputada = false WHERE vibration_imputada = true")
+print("✅ UPDATE executado — nova versão criada.")
+
+# Time travel dinâmico: consulta a versão anterior ao update
+df = spark.sql(f"""
+    SELECT COUNT(*) AS imputados_antes_do_update
+    FROM telemetry_silver VERSION AS OF {versao_antes}
+    WHERE vibration_imputada = true
+""")
+display(df)
 
 # COMMAND ----------
 

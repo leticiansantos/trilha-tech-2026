@@ -57,7 +57,7 @@ df_telemetry = spark.table(f"{GOLD}.furnace_telemetry")
 # Cria chave única reading_id = furnace_id + timestamp (a combinação é única na telemetria)
 df_reg = (
     df_telemetry
-    .withColumn("reading_id", F.concat_ws("_", F.col("furnace_id"), F.col("ts").cast("long")))
+    .withColumn("reading_id", F.concat_ws("_", F.col("furnace_id"), F.unix_timestamp("ts")))
     .select(
         "reading_id", "furnace_id", "ts",
         # features
@@ -83,6 +83,11 @@ display(df_reg.limit(5))
 # MAGIC ### 💬 Genie Code
 # MAGIC > *"Crie uma feature table no Unity Catalog chamada `furnace_energy_features` com chave
 # MAGIC > primária `reading_id` a partir do DataFrame `df_reg` usando o FeatureEngineeringClient."*
+
+# COMMAND ----------
+
+# MAGIC %pip install databricks-feature-engineering
+# MAGIC dbutils.library.restartPython()
 
 # COMMAND ----------
 

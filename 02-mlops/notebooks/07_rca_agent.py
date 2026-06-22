@@ -33,7 +33,6 @@
 # COMMAND ----------
 
 # MAGIC %pip install -U -qqqq databricks-langchain databricks-agents mlflow langgraph unitycatalog-ai unitycatalog-langchain
-# MAGIC dbutils.library.restartPython()
 
 # COMMAND ----------
 
@@ -56,7 +55,7 @@ mlflow.set_registry_uri("databricks-uc")
 # Foundation Model pré-provisionado (pay-per-token). Claude está disponível como endpoint
 # nativo no Databricks; se sua workspace não tiver, troque por outro FM da lista de
 # "Serving -> Foundation models" (ex.: databricks-meta-llama-3-3-70b-instruct).
-LLM_ENDPOINT = "databricks-claude-3-7-sonnet"
+LLM_ENDPOINT = "databricks-claude-sonnet-4"
 
 print(f"Schema do aluno: {CATALOG}.{SCHEMA}")
 print(f"LLM endpoint   : {LLM_ENDPOINT}")
@@ -135,6 +134,14 @@ display(spark.sql(f"SELECT * FROM {CATALOG}.{SCHEMA}.get_furnace_telemetry_stats
 
 # COMMAND ----------
 
+# Patch: langgraph-prebuilt 1.0.13 expects these from langgraph.runtime,
+# but langgraph 1.0.10 doesn't export them (type-only imports).
+import langgraph.runtime as _lr
+if not hasattr(_lr, "ExecutionInfo"):
+    class _Placeholder: pass
+    _lr.ExecutionInfo = _Placeholder
+    _lr.ServerInfo = _Placeholder
+
 from databricks_langchain import ChatDatabricks
 from databricks_langchain.uc_ai import (
     UCFunctionToolkit, DatabricksFunctionClient, set_uc_function_client,
@@ -173,8 +180,15 @@ print("Agente de RCA montado.")
 
 # COMMAND ----------
 
+# Patch: langgraph-prebuilt 1.0.13 accesses execution_info/server_info on Runtime,
+# but langgraph 1.0.10's Runtime class doesn't have them.
+from langgraph.runtime import Runtime as _Runtime
+if not hasattr(_Runtime, 'execution_info'):
+    _Runtime.execution_info = None
+    _Runtime.server_info = None
+
 def ask(question: str):
-    result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+    result = agent.invoke({"messages": [{"role": "user", "content": question}]}) if hasattr(agent, 'invoke') else None
     answer = result["messages"][-1].content
     print(f"❓ {question}\n")
     print(f"🤖 {answer}\n")
@@ -237,12 +251,11 @@ print(f"Tabela de manuais criada: {MANUALS_TABLE}")
 # COMMAND ----------
 
 # Cria o índice de Vector Search (managed embeddings). Requer um VS endpoint existente.
-from databricks.vector_search.client import VectorSearchClient
-
 VS_ENDPOINT = "cba_trilha_vs"  # nome do endpoint de Vector Search (provisionado pelo instrutor)
 VS_INDEX = f"{CATALOG}.{SCHEMA}.maintenance_manuals_index"
 
 try:
+    from databricks.vector_search.client import VectorSearchClient
     vsc = VectorSearchClient(disable_notice=True)
     vsc.create_delta_sync_index(
         endpoint_name=VS_ENDPOINT,
@@ -338,11 +351,55 @@ from mlflow.models.resources import DatabricksFunction, DatabricksServingEndpoin
 
 AGENT_MODEL = f"{CATALOG}.{SCHEMA}.rca_maintenance_agent"
 
+# LangChain v1+ exige models-from-code: gravar definição do agente em arquivo
+_agent_code = f"""import mlflow
+import langgraph.runtime as _lr
+if not hasattr(_lr, "ExecutionInfo"):
+    class _P: pass
+    _lr.ExecutionInfo = _P
+    _lr.ServerInfo = _P
+from langgraph.runtime import Runtime as _Rt
+if not hasattr(_Rt, "execution_info"):
+    _Rt.execution_info = None
+    _Rt.server_info = None
+
+from databricks_langchain import ChatDatabricks
+from databricks_langchain.uc_ai import UCFunctionToolkit, DatabricksFunctionClient, set_uc_function_client
+from langgraph.prebuilt import create_react_agent
+
+client = DatabricksFunctionClient()
+set_uc_function_client(client)
+toolkit = UCFunctionToolkit(function_names=[
+    "{CATALOG}.{SCHEMA}.get_furnace_telemetry_stats",
+    "{CATALOG}.{SCHEMA}.get_furnace_quality",
+    "{CATALOG}.{SCHEMA}.get_furnace_failure_rate",
+])
+llm = ChatDatabricks(endpoint="{LLM_ENDPOINT}", temperature=0.1)
+SYSTEM_PROMPT = (
+    "Voc\\u00ea \\u00e9 um assistente de manuten\\u00e7\\u00e3o (RCA) das cubas eletrol\\u00edticas da CBA. "
+    "Responda SEMPRE em portugu\\u00eas do Brasil, de forma t\\u00e9cnica e objetiva. "
+    "Use as ferramentas dispon\\u00edveis para consultar telemetria, qualidade e taxa de falha "
+    "de um forno antes de concluir. Quando identificar uma poss\\u00edvel causa raiz (ex.: efeito "
+    "an\\u00f3dico alto, desvio de temperatura, vibra\\u00e7\\u00e3o elevada, baixa qualidade de superf\\u00edcie), "
+    "explique o racioc\\u00ednio e sugira uma a\\u00e7\\u00e3o de manuten\\u00e7\\u00e3o. Se faltar o n\\u00famero do forno, pe\\u00e7a."
+)
+agent = create_react_agent(llm, toolkit.tools, prompt=SYSTEM_PROMPT)
+mlflow.models.set_model(agent)
+"""
+
+_agent_path = "/tmp/rca_agent_code.py"
+with open(_agent_path, "w") as f:
+    f.write(_agent_code)
+
+# Input example para inferir a signature exigida pelo Unity Catalog
+_input_example = {"messages": [{"role": "user", "content": "Por que a cuba 7 consome energia?"}]}
+
 with mlflow.start_run(run_name="rca_agent_register"):
     logged = mlflow.langchain.log_model(
-        lc_model=agent,
+        lc_model=_agent_path,
         artifact_path="agent",
         registered_model_name=AGENT_MODEL,
+        input_example=_input_example,
         # Declarar os recursos garante que o serving tenha permissão para chamá-los
         resources=[
             DatabricksServingEndpoint(endpoint_name=LLM_ENDPOINT),
@@ -388,3 +445,7 @@ except Exception as e:
 # MAGIC **EDA** à **modelagem** (regressão + classificação), **avaliação/governança** (champion/
 # MAGIC challenger no UC), **implantação** (serving + `ai_query`) e um **agente de IA** — sempre
 # MAGIC apoiado pelo **Genie Code** para nivelar a turma. Do forno ao mercado, ponta a ponta.
+
+# COMMAND ----------
+
+dbutils.library.restartPython()

@@ -3,7 +3,7 @@ Trilha Tech 2026 | CBA - API mock de mercado (Databricks App)
 =============================================================
 Serve os dados de preco do aluminio (LME) e cambio (USD/BRL)
 lendo diretamente do Volume Unity Catalog raw.landing via SDK.
-
+-- atualização
 Endpoints:
     GET /aluminum/lme?start=2026-01-01&end=2026-03-31
     GET /fx/usdbrl?start=2026-01-01&end=2026-03-31
