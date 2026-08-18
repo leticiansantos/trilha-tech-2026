@@ -20,7 +20,7 @@ Ao final, você será capaz de:
 - Extrair e comunicar **insights acionáveis**.
 
 ### Pré-requisitos
-- Acesso ao workspace Databricks da CBA e ao catálogo `cba_trilha_tech`.
+- Acesso ao workspace Databricks da CBA e ao catálogo `cba_workshop_trilha_tech`.
 - Um **SQL Warehouse Serverless** disponível.
 - Permissão de leitura no schema `gold`.
 - Navegador (Chrome/Edge). Nenhuma instalação local necessária.
@@ -198,7 +198,7 @@ constrói **dashboard farol + Genie space** e apresenta **3 insights acionáveis
 
 | Sintoma | Causa provável | Solução |
 |---------|----------------|---------|
-| "Table or view not found" | catálogo/schema errados | rode `USE CATALOG cba_trilha_tech; USE SCHEMA gold;` ou use nome completo |
+| "Table or view not found" | catálogo/schema errados | rode `USE CATALOG cba_workshop_trilha_tech; USE SCHEMA gold;` ou use nome completo |
 | Query lenta / "warehouse stopped" | warehouse parado/frio | selecione o Warehouse Serverless; aguarde o cold start (segundos) |
 | Divisão por zero / NULL estranho | denominador zero | use `NULLIF(coluna, 0)` no divisor |
 | Genie responde em inglês | falta instrução de idioma | reforce nas Instructions: "responda sempre em português" |

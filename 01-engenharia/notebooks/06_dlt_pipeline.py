@@ -22,7 +22,7 @@ import dlt
 from pyspark.sql import functions as F
 
 # Parâmetro do pipeline (configurado nas Settings do pipeline). Default seguro abaixo.
-LANDING = spark.conf.get("landing_path", "/Volumes/cba_trilha_tech/raw/landing")
+LANDING = spark.conf.get("landing_path", "/Volumes/cba_workshop_trilha_tech/raw/landing")
 SOURCE = f"{LANDING}/furnace_telemetry.csv"
 
 # COMMAND ----------
@@ -126,9 +126,9 @@ def telemetry_gold_dlt():
 # MAGIC 1. Menu lateral → **Jobs & Pipelines** → **Create** → **ETL pipeline** (Lakeflow Declarative).
 # MAGIC 2. **Pipeline name:** `cba_engenharia_<seu_nome>`.
 # MAGIC 3. **Source code:** aponte para **este notebook** (`06_dlt_pipeline`).
-# MAGIC 4. **Destination:** Unity Catalog → **Catalog** `cba_trilha_tech`, **Schema** o seu (`ws_...`).
+# MAGIC 4. **Destination:** Unity Catalog → **Catalog** `cba_workshop_trilha_tech`, **Schema** o seu (`ws_...`).
 # MAGIC 5. Em **Configuration**, adicione o parâmetro:
-# MAGIC    `landing_path` = `/Volumes/cba_trilha_tech/raw/landing`
+# MAGIC    `landing_path` = `/Volumes/cba_workshop_trilha_tech/raw/landing`
 # MAGIC 6. **Serverless** ligado (recomendado). Modo **Triggered** (roda e para).
 # MAGIC 7. Clique **Start**. Acompanhe o **grafo**: bronze → silver → gold se desenham e processam sozinhos.
 # MAGIC 8. Veja a aba **Data quality** — as expectativas mostram % de linhas que passaram/violaram.

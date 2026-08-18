@@ -20,7 +20,7 @@
 
 # COMMAND ----------
 
-CATALOG = "cba_trilha_tech"
+CATALOG = "cba_workshop_trilha_tech"
 RAW_SCHEMA = "raw"
 username = spark.sql("SELECT current_user()").collect()[0][0]
 user_schema = "ws_" + username.split("@")[0].replace(".", "_").replace("-", "_")

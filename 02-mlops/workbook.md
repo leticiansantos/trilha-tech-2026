@@ -39,7 +39,7 @@ Você **não precisa decorar sintaxe**. Em todos os módulos vamos gerar código
 ---
 
 ## Pré-requisitos
-- Acesso ao workspace Databricks da CBA e ao catálogo `cba_trilha_tech`.
+- Acesso ao workspace Databricks da CBA e ao catálogo `cba_workshop_trilha_tech`.
 - Um cluster (ou compute) com **Databricks Runtime for Machine Learning** (traz scikit-learn,
   MLflow, AutoML, XGBoost).
 - Noções básicas de Python e SQL ajudam, mas **não são obrigatórias** — o Genie Code cobre a lacuna.
@@ -77,7 +77,7 @@ saber como a energia se relaciona com as variáveis do forno.
 6. Veja a **distribuição dos labels** `is_failure` (~1,5%) e `is_defect` (~10%).
 
 > 💬 **Genie Code:** *"Crie um DataFrame pandas com uma amostra de 50 mil linhas de
-> `cba_trilha_tech.gold.furnace_telemetry` para gráficos."*
+> `cba_workshop_trilha_tech.gold.furnace_telemetry` para gráficos."*
 
 **✅ Checkpoint:** Você consegue dizer qual variável prever na regressão e na classificação, e que
 a energia **sobe** com a temperatura.

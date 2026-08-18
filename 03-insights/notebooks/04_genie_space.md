@@ -22,9 +22,9 @@ com a SQL correta). Vamos fazer as três.
 2. Nome: **"Genie — Do Forno ao Mercado (CBA)"**.
 3. Selecione o **SQL Warehouse Serverless**.
 4. Em **Data**, adicione (priorize as **Metric Views**, pois já têm a regra de negócio):
-   - `cba_trilha_tech.gold.mv_margem`
-   - `cba_trilha_tech.gold.mv_producao`
-   - `cba_trilha_tech.gold.mv_vendas`
+   - `cba_workshop_trilha_tech.gold.mv_margem`
+   - `cba_workshop_trilha_tech.gold.mv_producao`
+   - `cba_workshop_trilha_tech.gold.mv_vendas`
    - (opcional, detalhe) `fact_production`, `fact_sales`, `dim_plantas`, `dim_ligas`
 5. **Save**.
 
@@ -81,7 +81,7 @@ padrão e passa a acertar perguntas parecidas.
 **Exemplo 1 — "Qual a margem média por liga nos últimos 12 meses?"**
 ```sql
 SELECT alloy_name, MEASURE(margem_brl_ton) AS margem_brl_ton
-FROM cba_trilha_tech.gold.mv_margem
+FROM cba_workshop_trilha_tech.gold.mv_margem
 WHERE mes >= DATE_TRUNC('MONTH', ADD_MONTHS(CURRENT_DATE(), -12))
 GROUP BY alloy_name
 ORDER BY margem_brl_ton DESC;
@@ -90,7 +90,7 @@ ORDER BY margem_brl_ton DESC;
 **Exemplo 2 — "Como evoluiu o custo de energia por tonelada por planta?"**
 ```sql
 SELECT mes, plant_name, MEASURE(custo_energia_por_ton) AS custo_por_ton
-FROM cba_trilha_tech.gold.mv_producao
+FROM cba_workshop_trilha_tech.gold.mv_producao
 GROUP BY mes, plant_name
 ORDER BY mes;
 ```
@@ -98,7 +98,7 @@ ORDER BY mes;
 **Exemplo 3 — "Vendemos mais para o mercado interno ou externo este ano?"**
 ```sql
 SELECT market, MEASURE(total_tons_vendidas) AS tons, MEASURE(receita_brl) AS receita
-FROM cba_trilha_tech.gold.mv_vendas
+FROM cba_workshop_trilha_tech.gold.mv_vendas
 WHERE mes >= DATE_TRUNC('YEAR', CURRENT_DATE())
 GROUP BY market
 ORDER BY receita DESC;
@@ -145,9 +145,9 @@ Quando o Genie errar (cálculo estranho, tabela errada, resposta em inglês):
   **Can edit** (curar instruções/samples).
 - Garanta `SELECT` nas Metric Views/tabelas para o grupo:
   ```sql
-  GRANT SELECT ON VIEW cba_trilha_tech.gold.mv_margem   TO `cba_analistas`;
-  GRANT SELECT ON VIEW cba_trilha_tech.gold.mv_producao TO `cba_analistas`;
-  GRANT SELECT ON VIEW cba_trilha_tech.gold.mv_vendas   TO `cba_analistas`;
+  GRANT SELECT ON VIEW cba_workshop_trilha_tech.gold.mv_margem   TO `cba_analistas`;
+  GRANT SELECT ON VIEW cba_workshop_trilha_tech.gold.mv_producao TO `cba_analistas`;
+  GRANT SELECT ON VIEW cba_workshop_trilha_tech.gold.mv_vendas   TO `cba_analistas`;
   ```
 - **Boa prática:** dê acesso via **Metric Views certificadas** em vez das tabelas cruas —
   o usuário pergunta sobre "margem" sem nunca tocar nas colunas brutas.

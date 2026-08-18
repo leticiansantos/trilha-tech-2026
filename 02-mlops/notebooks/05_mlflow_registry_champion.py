@@ -30,7 +30,7 @@
 import mlflow
 from mlflow.tracking import MlflowClient
 
-CATALOG = "cba_trilha_tech"
+CATALOG = "cba_workshop_trilha_tech"
 current_user = spark.sql("SELECT current_user()").collect()[0][0]
 user_prefix = current_user.split("@")[0].replace(".", "_").replace("-", "_")
 SCHEMA = f"mlops_{user_prefix}"
@@ -152,7 +152,7 @@ else:
 
 # MAGIC %md
 # MAGIC ## 7. Governança & lineage
-# MAGIC No Unity Catalog, abra **Catalog → cba_trilha_tech → seu schema → Models** e veja:
+# MAGIC No Unity Catalog, abra **Catalog → cba_workshop_trilha_tech → seu schema → Models** e veja:
 # MAGIC - **Versions** e os **aliases** (champion/challenger) que você definiu.
 # MAGIC - **Lineage** — quais notebooks/jobs e tabelas geraram o modelo.
 # MAGIC - **Permissions** — quem pode ler, usar e gerenciar o modelo.

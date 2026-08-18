@@ -25,7 +25,7 @@ Assim os notebooks já aparecem no workspace, prontos para rodar.
 
 ### 2. Preparar o ambiente (uma vez, antes dos workshops)
 Siga o [`00-setup/`](00-setup/): gerar os dados sintéticos e provisionar o catálogo
-`cba_trilha_tech` (camada `gold` + Volume `raw.landing`).
+`cba_workshop_trilha_tech` (camada `gold` + Volume `raw.landing`).
 
 ### 3. Conduzir cada trilha
 Abra a pasta da trilha, leia o `workbook.md` (apostila do aluno) e siga os notebooks na ordem numérica.

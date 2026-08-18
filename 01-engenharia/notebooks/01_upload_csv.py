@@ -20,7 +20,7 @@
 
 # COMMAND ----------
 
-CATALOG = "cba_trilha_tech"
+CATALOG = "cba_workshop_trilha_tech"
 RAW_SCHEMA = "raw"
 username = spark.sql("SELECT current_user()").collect()[0][0]
 user_schema = "ws_" + username.split("@")[0].replace(".", "_").replace("-", "_")
@@ -62,7 +62,7 @@ with open(CSV_SAMPLE, "r") as f:
 # MAGIC Hoje o instrutor já subiu os arquivos, mas é assim que VOCÊ sobe um CSV no dia a dia:
 # MAGIC
 # MAGIC 1. Menu lateral → **Catalog**.
-# MAGIC 2. Navegue até `cba_trilha_tech` → `raw` → `landing`.
+# MAGIC 2. Navegue até `cba_workshop_trilha_tech` → `raw` → `landing`.
 # MAGIC 3. Botão **Upload to this volume** (canto superior direito).
 # MAGIC 4. Arraste o `.csv` e confirme.
 # MAGIC
@@ -74,7 +74,7 @@ with open(CSV_SAMPLE, "r") as f:
 # MAGIC %md
 # MAGIC ## 3. Ler o CSV com Spark
 # MAGIC
-# MAGIC > 💬 **Genie Code:** *"Leia o CSV em /Volumes/cba_trilha_tech/raw/landing/sample/furnace_telemetry_sample.csv
+# MAGIC > 💬 **Genie Code:** *"Leia o CSV em /Volumes/cba_workshop_trilha_tech/raw/landing/sample/furnace_telemetry_sample.csv
 # MAGIC > com cabeçalho e inferência de schema, e mostre as 10 primeiras linhas."*
 # MAGIC
 # MAGIC Duas opções importantes:

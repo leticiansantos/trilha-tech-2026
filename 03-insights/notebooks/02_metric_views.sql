@@ -32,12 +32,12 @@
 -- MAGIC
 -- MAGIC Você consulta uma Metric View com a sintaxe `MEASURE(...)`:
 -- MAGIC ```sql
--- MAGIC SELECT plant_name, MEASURE(total_tons) FROM cba_trilha_tech.gold.mv_producao GROUP BY plant_name;
+-- MAGIC SELECT plant_name, MEASURE(total_tons) FROM cba_workshop_trilha_tech.gold.mv_producao GROUP BY plant_name;
 -- MAGIC ```
 
 -- COMMAND ----------
 
-USE CATALOG cba_trilha_tech;
+USE CATALOG cba_workshop_trilha_tech;
 USE SCHEMA gold;
 
 -- COMMAND ----------
@@ -47,7 +47,7 @@ USE SCHEMA gold;
 
 -- COMMAND ----------
 
-CREATE OR REPLACE VIEW cba_trilha_tech.gold.mv_producao
+CREATE OR REPLACE VIEW cba_workshop_trilha_tech.gold.mv_producao
 (
   -- comentários de coluna ajudam o Genie a entender o negócio
   plant_name           COMMENT 'Nome da planta produtora',
@@ -65,13 +65,13 @@ WITH METRICS
 LANGUAGE YAML
 AS $$
 version: 0.1
-source: cba_trilha_tech.gold.fact_production
+source: cba_workshop_trilha_tech.gold.fact_production
 joins:
   - name: plantas
-    source: cba_trilha_tech.gold.dim_plantas
+    source: cba_workshop_trilha_tech.gold.dim_plantas
     on: source.plant_id = plantas.plant_id
   - name: ligas
-    source: cba_trilha_tech.gold.dim_ligas
+    source: cba_workshop_trilha_tech.gold.dim_ligas
     on: source.alloy_id = ligas.alloy_id
 dimensions:
   - name: plant_name
@@ -107,7 +107,7 @@ SELECT
   MEASURE(total_tons)            AS total_tons,
   MEASURE(custo_energia_por_ton) AS custo_por_ton,
   MEASURE(oee_qualidade_pct)     AS oee_qualidade_pct
-FROM cba_trilha_tech.gold.mv_producao
+FROM cba_workshop_trilha_tech.gold.mv_producao
 GROUP BY plant_name
 ORDER BY total_tons DESC;
 
@@ -124,7 +124,7 @@ ORDER BY total_tons DESC;
 
 -- COMMAND ----------
 
-CREATE OR REPLACE VIEW cba_trilha_tech.gold.mv_vendas
+CREATE OR REPLACE VIEW cba_workshop_trilha_tech.gold.mv_vendas
 (
   mes                COMMENT 'Mês de referência',
   market             COMMENT 'Mercado: Interno ou Externo',
@@ -141,10 +141,10 @@ WITH METRICS
 LANGUAGE YAML
 AS $$
 version: 0.1
-source: cba_trilha_tech.gold.fact_sales
+source: cba_workshop_trilha_tech.gold.fact_sales
 joins:
   - name: ligas
-    source: cba_trilha_tech.gold.dim_ligas
+    source: cba_workshop_trilha_tech.gold.dim_ligas
     on: source.alloy_id = ligas.alloy_id
 dimensions:
   - name: mes
@@ -178,7 +178,7 @@ SELECT
   MEASURE(total_tons_vendidas) AS tons,
   MEASURE(receita_brl)         AS receita,
   MEASURE(preco_medio_brl_ton) AS preco_medio
-FROM cba_trilha_tech.gold.mv_vendas
+FROM cba_workshop_trilha_tech.gold.mv_vendas
 GROUP BY market
 ORDER BY receita DESC;
 
@@ -193,7 +193,7 @@ ORDER BY receita DESC;
 
 -- COMMAND ----------
 
-CREATE OR REPLACE VIEW cba_trilha_tech.gold.mv_margem
+CREATE OR REPLACE VIEW cba_workshop_trilha_tech.gold.mv_margem
 (
   mes                  COMMENT 'Mês de referência',
   alloy_name           COMMENT 'Nome da liga',
@@ -214,9 +214,9 @@ source: |
     SUM(s.tons_sold)                                               AS tons_sold,
     SUM(p.energy_kwh) / 1000 * 320                                 AS custo_energia_brl,
     SUM(p.tons_produced)                                           AS tons_produced
-  FROM cba_trilha_tech.gold.fact_sales s
-  JOIN cba_trilha_tech.gold.dim_ligas li ON s.alloy_id = li.alloy_id
-  LEFT JOIN cba_trilha_tech.gold.fact_production p
+  FROM cba_workshop_trilha_tech.gold.fact_sales s
+  JOIN cba_workshop_trilha_tech.gold.dim_ligas li ON s.alloy_id = li.alloy_id
+  LEFT JOIN cba_workshop_trilha_tech.gold.fact_production p
     ON p.alloy_id = s.alloy_id
    AND DATE_TRUNC('MONTH', p.date) = DATE_TRUNC('MONTH', s.date)
   GROUP BY DATE_TRUNC('MONTH', s.date), li.alloy_name
@@ -248,7 +248,7 @@ SELECT
   MEASURE(custo_energia_por_ton) AS custo,
   MEASURE(margem_brl_ton)        AS margem,
   MEASURE(margem_pct)            AS margem_pct
-FROM cba_trilha_tech.gold.mv_margem
+FROM cba_workshop_trilha_tech.gold.mv_margem
 GROUP BY mes
 ORDER BY mes;
 
@@ -258,17 +258,17 @@ ORDER BY mes;
 -- MAGIC ## 4 · Certifique as Metric Views (governança + descoberta)
 -- MAGIC
 -- MAGIC Para o Genie e os colegas confiarem nesses objetos, adicione descrições e marque como
--- MAGIC **Certified** no Catalog Explorer (Data → cba_trilha_tech → gold → mv_*). Via SQL:
+-- MAGIC **Certified** no Catalog Explorer (Data → cba_workshop_trilha_tech → gold → mv_*). Via SQL:
 
 -- COMMAND ----------
 
-COMMENT ON VIEW cba_trilha_tech.gold.mv_margem IS
+COMMENT ON VIEW cba_workshop_trilha_tech.gold.mv_margem IS
   'Camada semântica de MARGEM (Do Forno ao Mercado). Margem/ton = preço de venda - custo de energia. Fonte oficial para dashboards e Genie. CERTIFICADA.';
 
-COMMENT ON VIEW cba_trilha_tech.gold.mv_producao IS
+COMMENT ON VIEW cba_workshop_trilha_tech.gold.mv_producao IS
   'Camada semântica de PRODUÇÃO: toneladas, custo de energia/ton e OEE de qualidade. CERTIFICADA.';
 
-COMMENT ON VIEW cba_trilha_tech.gold.mv_vendas IS
+COMMENT ON VIEW cba_workshop_trilha_tech.gold.mv_vendas IS
   'Camada semântica de VENDAS: receita, preço médio, mercado Interno/Externo, LME e câmbio. CERTIFICADA.';
 
 -- COMMAND ----------
@@ -280,7 +280,7 @@ COMMENT ON VIEW cba_trilha_tech.gold.mv_vendas IS
 -- MAGIC > dimensão `defect_type`. Prompt:
 -- MAGIC >
 -- MAGIC > ```
--- MAGIC > Crie uma UC Metric View chamada mv_qualidade sobre cba_trilha_tech.gold.furnace_inspections,
+-- MAGIC > Crie uma UC Metric View chamada mv_qualidade sobre cba_workshop_trilha_tech.gold.furnace_inspections,
 -- MAGIC > com dimensões defect_type e mês (a partir da coluna de data), e medidas:
 -- MAGIC > taxa_defeito_pct = AVG(is_defect)*100 e surface_quality_medio = AVG(surface_quality_score).
 -- MAGIC > Use a sintaxe WITH METRICS LANGUAGE YAML.

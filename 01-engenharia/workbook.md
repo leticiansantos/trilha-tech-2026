@@ -35,7 +35,7 @@ o **Databricks Assistant ("Genie Code" / vibe code)** é o fio condutor do dia:
 > 💡 **Regra de ouro:** se travou na sintaxe, **pergunte ao Assistant**. Ninguém é cobrado por decorar.
 
 ## ✅ Pré-requisitos
-- Acesso ao workspace Databricks da turma e ao catálogo `cba_trilha_tech`.
+- Acesso ao workspace Databricks da turma e ao catálogo `cba_workshop_trilha_tech`.
 - Permissão de **USE CATALOG** + criação de schema pessoal (o instrutor já provisiona).
 - Os notebooks `00`–`07` importados na sua pasta de usuário.
 - Noções básicas de tabela/linha/coluna (Excel ou Power BI já bastam).
@@ -69,7 +69,7 @@ o **Databricks Assistant ("Genie Code" / vibe code)** é o fio condutor do dia:
 3. Crie catálogo, schemas e o Volume `raw.landing`.
 4. Liste os arquivos do Volume e confirme que estão lá.
 
-**💬 Genie Code:** *"Crie o catálogo cba_trilha_tech e os schemas raw e o meu schema pessoal a partir do
+**💬 Genie Code:** *"Crie o catálogo cba_workshop_trilha_tech e os schemas raw e o meu schema pessoal a partir do
 usuário atual, se não existirem, e selecione o catálogo."*
 
 **✅ Você deve ver:** seu schema `ws_...` criado e as 4 plantas da CBA listadas.
@@ -88,7 +88,7 @@ usuário atual, se não existirem, e selecione o catálogo."*
 5. Salve como tabela Delta (`saveAsTable`).
 6. Consulte em SQL (`%sql`).
 
-**💬 Genie Code:** *"Leia o CSV em /Volumes/cba_trilha_tech/raw/landing/sample/furnace_telemetry_sample.csv
+**💬 Genie Code:** *"Leia o CSV em /Volumes/cba_workshop_trilha_tech/raw/landing/sample/furnace_telemetry_sample.csv
 com cabeçalho e inferência de schema e mostre as 10 primeiras linhas."*
 
 **Exercícios**

@@ -20,7 +20,7 @@ from databricks.sdk import WorkspaceClient
 w = WorkspaceClient()
 
 # Caminho absoluto do Volume no Unity Catalog
-VOLUME_PATH = "/Volumes/cba_trilha_tech/raw/landing"
+VOLUME_PATH = "/Volumes/cba_workshop_trilha_tech/raw/landing"
 
 app = FastAPI(
     title="CBA Market API (mock)",

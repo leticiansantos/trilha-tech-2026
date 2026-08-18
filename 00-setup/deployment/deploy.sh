@@ -20,13 +20,13 @@
 #
 # Uso:
 #   ./deploy.sh [DATABRICKS_PROFILE] [CATALOG] [CATALOG_LOCATION]
-#   ex.:  ./deploy.sh cba cba_trilha_tech
-#   ex. (sem storage root):  ./deploy.sh cba cba_trilha_tech "abfss://container@account.dfs.core.windows.net/cba"
+#   ex.:  ./deploy.sh cba cba_workshop_trilha_tech
+#   ex. (sem storage root):  ./deploy.sh cba cba_workshop_trilha_tech "abfss://container@account.dfs.core.windows.net/cba"
 # =============================================================================
 set -euo pipefail
 
 PROFILE="${1:-DEFAULT}"
-CATALOG="${2:-cba_trilha_tech}"
+CATALOG="${2:-cba_workshop_trilha_tech}"
 CATALOG_LOCATION="${3:-}"
 RAW_SCHEMA="raw"
 VOLUME="landing"

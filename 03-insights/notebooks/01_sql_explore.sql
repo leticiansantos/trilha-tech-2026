@@ -22,14 +22,14 @@
 -- MAGIC ## 0 · Preparação (rode uma vez)
 -- MAGIC
 -- MAGIC 1. No topo do SQL Editor, selecione um **SQL Warehouse Serverless** (canto superior direito).
--- MAGIC 2. Confirme que você tem acesso ao catálogo `cba_trilha_tech`.
+-- MAGIC 2. Confirme que você tem acesso ao catálogo `cba_workshop_trilha_tech`.
 -- MAGIC 3. Para abrir o Assistant: clique no ícone ✨ (Assistant) na barra lateral da célula,
 -- MAGIC    ou pressione **Cmd/Ctrl + I** dentro de uma célula de código.
 
 -- COMMAND ----------
 
 -- Define catálogo e schema padrão para não repetir o prefixo o tempo todo
-USE CATALOG cba_trilha_tech;
+USE CATALOG cba_workshop_trilha_tech;
 USE SCHEMA gold;
 
 -- COMMAND ----------
@@ -42,12 +42,12 @@ USE SCHEMA gold;
 -- COMMAND ----------
 
 -- Quais tabelas existem no schema gold?
-SHOW TABLES IN cba_trilha_tech.gold;
+SHOW TABLES IN cba_workshop_trilha_tech.gold;
 
 -- COMMAND ----------
 
 -- Quais colunas e tipos a tabela de produção tem?
-DESCRIBE TABLE cba_trilha_tech.gold.fact_production;
+DESCRIBE TABLE cba_workshop_trilha_tech.gold.fact_production;
 
 -- COMMAND ----------
 
@@ -84,7 +84,7 @@ SELECT * FROM fact_production LIMIT 20;
 -- MAGIC > Em uma célula vazia, abra o Assistant (✨ / Cmd+I) e digite:
 -- MAGIC >
 -- MAGIC > ```
--- MAGIC > Usando cba_trilha_tech.gold.fact_production e dim_plantas, me dê o total de
+-- MAGIC > Usando cba_workshop_trilha_tech.gold.fact_production e dim_plantas, me dê o total de
 -- MAGIC > toneladas produzidas (tons_produced) por nome de planta (plant_name),
 -- MAGIC > ordenado do maior para o menor.
 -- MAGIC > ```
@@ -229,7 +229,7 @@ ORDER BY mes;
 -- MAGIC > Peça ao Assistant:
 -- MAGIC >
 -- MAGIC > ```
--- MAGIC > A partir de cba_trilha_tech.gold.fact_sales, calcule a margem por tonelada como
+-- MAGIC > A partir de cba_workshop_trilha_tech.gold.fact_sales, calcule a margem por tonelada como
 -- MAGIC > price_brl_ton menos o custo de energia por ton. O custo de energia por ton vem de
 -- MAGIC > fact_production: (energy_kwh/1000*320)/tons_produced, agregado por mês. Junte os dois
 -- MAGIC > por mês e mostre a margem média mensal.

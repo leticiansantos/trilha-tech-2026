@@ -1,6 +1,6 @@
 # 00 · Setup do ambiente
 
-Faça isto **uma vez**, antes dos workshops. Cria o catálogo `cba_trilha_tech`, gera os dados
+Faça isto **uma vez**, antes dos workshops. Cria o catálogo `cba_workshop_trilha_tech`, gera os dados
 sintéticos e carrega a camada `gold` que as trilhas consomem.
 
 ## Pré-requisitos (instalar uma vez)
@@ -48,24 +48,24 @@ databricks auth login --host https://<workspace-cba>.cloud.databricks.com
 **macOS / Linux**
 ```bash
 cd ../deployment
-./deploy.sh <PROFILE> cba_trilha_tech     # sobe os dados, deploya o bundle e carrega a gold
+./deploy.sh <PROFILE> cba_workshop_trilha_tech     # sobe os dados, deploya o bundle e carrega a gold
 ```
 
 **Windows (PowerShell)**
 ```powershell
 cd ..\deployment
-.\deploy.ps1 <PROFILE> cba_trilha_tech
+.\deploy.ps1 <PROFILE> cba_workshop_trilha_tech
 ```
 
 Detalhes e arquitetura de dados em [`deployment/README.md`](deployment/README.md).
 
 ## Arquitetura de dados (resumo)
 ```
-cba_trilha_tech
+cba_workshop_trilha_tech
 ├── raw.landing (Volume)   ← CSVs/Parquet (origem da Trilha 1)
 ├── gold.*                 ← camada canônica: Trilhas 2 e 3 consomem (gabarito da Trilha 1)
 └── ws_<usuario>           ← schema pessoal de cada aluno (Trilha 1 constrói aqui)
 ```
 
 ## Validação
-No workspace: `SHOW TABLES IN cba_trilha_tech.gold;` deve listar 11 tabelas.
+No workspace: `SHOW TABLES IN cba_workshop_trilha_tech.gold;` deve listar 11 tabelas.

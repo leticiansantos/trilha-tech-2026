@@ -43,7 +43,7 @@ SELECT
   MEASURE(custo_energia_por_ton) AS custo_brl_ton,
   MEASURE(margem_brl_ton)        AS margem_brl_ton,
   MEASURE(margem_pct)            AS margem_pct
-FROM cba_trilha_tech.gold.mv_margem
+FROM cba_workshop_trilha_tech.gold.mv_margem
 GROUP BY mes
 ORDER BY mes;
 ```
@@ -53,8 +53,8 @@ ORDER BY mes;
 SELECT
   MEASURE(margem_brl_ton) AS margem_atual,
   MEASURE(margem_pct)     AS margem_pct
-FROM cba_trilha_tech.gold.mv_margem
-WHERE mes = (SELECT MAX(mes) FROM cba_trilha_tech.gold.mv_margem);
+FROM cba_workshop_trilha_tech.gold.mv_margem
+WHERE mes = (SELECT MAX(mes) FROM cba_workshop_trilha_tech.gold.mv_margem);
 ```
 
 **Dataset `producao_por_planta`:**
@@ -63,7 +63,7 @@ SELECT
   plant_name,
   MEASURE(total_tons)            AS total_tons,
   MEASURE(custo_energia_por_ton) AS custo_por_ton
-FROM cba_trilha_tech.gold.mv_producao
+FROM cba_workshop_trilha_tech.gold.mv_producao
 GROUP BY plant_name
 ORDER BY total_tons DESC;
 ```
@@ -74,7 +74,7 @@ SELECT
   market,
   MEASURE(total_tons_vendidas) AS tons,
   MEASURE(receita_brl)         AS receita
-FROM cba_trilha_tech.gold.mv_vendas
+FROM cba_workshop_trilha_tech.gold.mv_vendas
 GROUP BY market;
 ```
 
@@ -83,7 +83,7 @@ GROUP BY market;
 SELECT
   alloy_name,
   MEASURE(margem_brl_ton) AS margem_brl_ton
-FROM cba_trilha_tech.gold.mv_margem
+FROM cba_workshop_trilha_tech.gold.mv_margem
 GROUP BY alloy_name
 ORDER BY margem_brl_ton DESC;
 ```

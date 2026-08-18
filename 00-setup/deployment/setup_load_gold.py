@@ -2,13 +2,13 @@
 # MAGIC %md
 # MAGIC # Trilha Tech 2026 | CBA — Setup da camada GOLD canônica
 # MAGIC
-# MAGIC Provisiona o ambiente das 3 trilhas: cria o catálogo `cba_trilha_tech`, os schemas
+# MAGIC Provisiona o ambiente das 3 trilhas: cria o catálogo `cba_workshop_trilha_tech`, os schemas
 # MAGIC `raw` e `gold`, o Volume `raw.landing`, e **carrega os CSVs sintéticos como tabelas
-# MAGIC Delta canônicas em `cba_trilha_tech.gold.*`**.
+# MAGIC Delta canônicas em `cba_workshop_trilha_tech.gold.*`**.
 # MAGIC
 # MAGIC - **Trilha 1 (Engenharia):** os alunos reconstroem a medalhão a partir do Volume `raw.landing`
 # MAGIC   no seu schema pessoal (`ws_<user>`). Esta camada gold serve de gabarito.
-# MAGIC - **Trilhas 2 (MLOps) e 3 (Insights):** consomem diretamente `cba_trilha_tech.gold.*`.
+# MAGIC - **Trilhas 2 (MLOps) e 3 (Insights):** consomem diretamente `cba_workshop_trilha_tech.gold.*`.
 # MAGIC
 # MAGIC Pré-requisito: os arquivos de `data-generation/output/` já devem estar no Volume
 # MAGIC (o `deploy.sh` faz o upload). Rode este notebook uma vez, antes dos workshops.
@@ -16,7 +16,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Parâmetros
-dbutils.widgets.text("catalog", "cba_trilha_tech", "Catálogo")
+dbutils.widgets.text("catalog", "cba_workshop_trilha_tech", "Catálogo")
 dbutils.widgets.text("catalog_location", "", "Storage location (deixe vazio para usar o default do metastore)")
 CATALOG = dbutils.widgets.get("catalog")
 CATALOG_LOCATION = dbutils.widgets.get("catalog_location").strip()

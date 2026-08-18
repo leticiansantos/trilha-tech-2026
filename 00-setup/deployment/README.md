@@ -5,7 +5,7 @@ Provisiona o ambiente de testes da CBA para os 3 workshops.
 ## Arquitetura de dados
 
 ```
-cba_trilha_tech (catálogo)
+cba_workshop_trilha_tech (catálogo)
 ├── raw
 │   └── landing (Volume)         ← CSVs/Parquet sintéticos (origem da Trilha 1)
 │       ├── *.csv, furnace_telemetry.parquet
@@ -19,7 +19,7 @@ cba_trilha_tech (catálogo)
 ```
 
 - **Trilha 1 (Engenharia):** alunos leem `raw.landing` e constroem bronze→silver→gold no seu schema pessoal `ws_<user>`. A camada `gold` serve de gabarito/referência.
-- **Trilhas 2 (MLOps) e 3 (Insights):** leem direto de `cba_trilha_tech.gold.*` (não dependem do output de cada aluno na Trilha 1).
+- **Trilhas 2 (MLOps) e 3 (Insights):** leem direto de `cba_workshop_trilha_tech.gold.*` (não dependem do output de cada aluno na Trilha 1).
 
 ## Pré-requisitos (instalar uma vez na máquina local)
 
@@ -60,7 +60,7 @@ databricks auth login --host https://<workspace-cba>.cloud.databricks.com
 
 # 3. provisionar (cria catálogo/volume, sobe dados, deploya bundle, carrega gold)
 cd ../deployment
-./deploy.sh <PROFILE> cba_trilha_tech
+./deploy.sh <PROFILE> cba_workshop_trilha_tech
 ```
 
 ### Windows (PowerShell)
@@ -83,7 +83,7 @@ databricks auth login --host https://<workspace-cba>.cloud.databricks.com
 
 # 3. provisionar (cria catálogo/volume, sobe dados, deploya bundle, carrega gold)
 cd ..\deployment
-.\deploy.ps1 <PROFILE> cba_trilha_tech
+.\deploy.ps1 <PROFILE> cba_workshop_trilha_tech
 ```
 
 ### Parâmetro opcional: `CATALOG_LOCATION`
@@ -92,24 +92,24 @@ Por padrão, o catálogo é criado usando o **Default Storage** do metastore Uni
 
 ```bash
 # macOS/Linux — Azure Data Lake Storage
-./deploy.sh <PROFILE> cba_trilha_tech "abfss://container@storageaccount.dfs.core.windows.net/cba"
+./deploy.sh <PROFILE> cba_workshop_trilha_tech "abfss://container@storageaccount.dfs.core.windows.net/cba"
 
 # macOS/Linux — AWS S3
-./deploy.sh <PROFILE> cba_trilha_tech "s3://bucket-name/cba"
+./deploy.sh <PROFILE> cba_workshop_trilha_tech "s3://bucket-name/cba"
 
 # macOS/Linux — Google Cloud Storage
-./deploy.sh <PROFILE> cba_trilha_tech "gs://bucket-name/cba"
+./deploy.sh <PROFILE> cba_workshop_trilha_tech "gs://bucket-name/cba"
 ```
 
 ```powershell
 # Windows — Azure Data Lake Storage
-.\deploy.ps1 <PROFILE> cba_trilha_tech "abfss://container@storageaccount.dfs.core.windows.net/cba"
+.\deploy.ps1 <PROFILE> cba_workshop_trilha_tech "abfss://container@storageaccount.dfs.core.windows.net/cba"
 
 # Windows — AWS S3
-.\deploy.ps1 <PROFILE> cba_trilha_tech "s3://bucket-name/cba"
+.\deploy.ps1 <PROFILE> cba_workshop_trilha_tech "s3://bucket-name/cba"
 
 # Windows — Google Cloud Storage
-.\deploy.ps1 <PROFILE> cba_trilha_tech "gs://bucket-name/cba"
+.\deploy.ps1 <PROFILE> cba_workshop_trilha_tech "gs://bucket-name/cba"
 ```
 
 > **Como saber se preciso?** Se o deploy falhar com `Metastore storage root URL does not exist`, é necessário passar o `CATALOG_LOCATION`. O caminho pode ser encontrado no workspace em **Settings → Unity Catalog → Storage credentials** ou com o admin da conta.
@@ -121,7 +121,7 @@ Volume `raw.landing` e rode o notebook `setup_load_gold.py` com o parâmetro `ca
 
 ```bash
 databricks bundle validate -t dev          # valida o bundle
-# no workspace: SHOW TABLES IN cba_trilha_tech.gold;  (deve listar 11 tabelas)
+# no workspace: SHOW TABLES IN cba_workshop_trilha_tech.gold;  (deve listar 11 tabelas)
 ```
 
 ## Recursos adicionais por trilha (provisionar antes de cada workshop)

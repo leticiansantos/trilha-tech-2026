@@ -20,12 +20,12 @@
 #
 # Uso:
 #   .\deploy.ps1 [PROFILE] [CATALOG] [CATALOG_LOCATION]
-#   ex.:  .\deploy.ps1 cba cba_trilha_tech
-#   ex.:  .\deploy.ps1 cba cba_trilha_tech "abfss://container@account.dfs.core.windows.net/cba"
+#   ex.:  .\deploy.ps1 cba cba_workshop_trilha_tech
+#   ex.:  .\deploy.ps1 cba cba_workshop_trilha_tech "abfss://container@account.dfs.core.windows.net/cba"
 # =============================================================================
 param(
     [string]$Profile         = "DEFAULT",
-    [string]$Catalog         = "cba_trilha_tech",
+    [string]$Catalog         = "cba_workshop_trilha_tech",
     [string]$CatalogLocation = ""
 )
 

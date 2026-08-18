@@ -30,7 +30,7 @@
 
 import mlflow
 
-CATALOG = "cba_trilha_tech"
+CATALOG = "cba_workshop_trilha_tech"
 current_user = spark.sql("SELECT current_user()").collect()[0][0]
 user_prefix = current_user.split("@")[0].replace(".", "_").replace("-", "_")
 SCHEMA = f"mlops_{user_prefix}"

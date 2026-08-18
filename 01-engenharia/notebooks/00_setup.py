@@ -20,7 +20,7 @@
 # MAGIC ---
 # MAGIC ### O que este notebook faz
 # MAGIC - Verifica seu acesso ao Unity Catalog.
-# MAGIC - Cria o catálogo `cba_trilha_tech` e os schemas (`raw` + o **seu schema pessoal**).
+# MAGIC - Cria o catálogo `cba_workshop_trilha_tech` e os schemas (`raw` + o **seu schema pessoal**).
 # MAGIC - Cria o **Volume** `raw.landing` onde ficam os arquivos brutos.
 # MAGIC - Confirma que os arquivos CSV/Parquet foram carregados pelo instrutor.
 
@@ -35,7 +35,7 @@
 # COMMAND ----------
 
 # Catálogo e schema bruto são COMPARTILHADOS pela turma toda
-CATALOG = "cba_trilha_tech"
+CATALOG = "cba_workshop_trilha_tech"
 RAW_SCHEMA = "raw"
 
 # Descobrimos quem é você e derivamos um schema pessoal: ws_<seu_usuario>
@@ -53,7 +53,7 @@ print(f"🙋 Seu schema ...: {user_schema}  (só seu)")
 # MAGIC ## 2. Criar catálogo e schemas
 # MAGIC
 # MAGIC > 💬 **Genie Code** — experimente digitar no Assistant:
-# MAGIC > *"Crie o catálogo cba_trilha_tech e dois schemas: raw e um schema pessoal a partir do usuário atual, se não existirem, e selecione o catálogo."*
+# MAGIC > *"Crie o catálogo cba_workshop_trilha_tech e dois schemas: raw e um schema pessoal a partir do usuário atual, se não existirem, e selecione o catálogo."*
 # MAGIC >
 # MAGIC > Compare o que o Assistant gerar com o código abaixo. Use `/explain` para entender cada comando.
 
@@ -92,8 +92,8 @@ print(f"✅ Volume pronto: {LANDING}")
 # MAGIC
 # MAGIC **Quem sobe os arquivos?** O **instrutor** sobe os CSV/Parquet uma vez para a turma toda,
 # MAGIC via:
-# MAGIC - **Catalog Explorer** → `cba_trilha_tech` → `raw` → `landing` → botão **Upload to this volume**, ou
-# MAGIC - Databricks CLI: `databricks fs cp ./output/ dbfs:/Volumes/cba_trilha_tech/raw/landing/ --recursive`
+# MAGIC - **Catalog Explorer** → `cba_workshop_trilha_tech` → `raw` → `landing` → botão **Upload to this volume**, ou
+# MAGIC - Databricks CLI: `databricks fs cp ./output/ dbfs:/Volumes/cba_workshop_trilha_tech/raw/landing/ --recursive`
 # MAGIC
 # MAGIC Esperamos encontrar no Volume:
 # MAGIC - `furnace_telemetry.csv` (telemetria completa do Gorila, ~864 mil linhas)
@@ -109,7 +109,7 @@ print(f"✅ Volume pronto: {LANDING}")
 # MAGIC %md
 # MAGIC ## 5. Verificar — quais arquivos estão no Volume?
 # MAGIC
-# MAGIC > 💬 **Genie Code:** *"Liste todos os arquivos do volume /Volumes/cba_trilha_tech/raw/landing,
+# MAGIC > 💬 **Genie Code:** *"Liste todos os arquivos do volume /Volumes/cba_workshop_trilha_tech/raw/landing,
 # MAGIC > incluindo as subpastas, mostrando nome e tamanho."*
 
 # COMMAND ----------
@@ -153,7 +153,7 @@ except Exception as e:
 # MAGIC %md
 # MAGIC ## ✅ Checkpoint
 # MAGIC Você deve ver:
-# MAGIC - O catálogo `cba_trilha_tech` e seu schema pessoal `ws_...` criados.
+# MAGIC - O catálogo `cba_workshop_trilha_tech` e seu schema pessoal `ws_...` criados.
 # MAGIC - O Volume `raw.landing` listando os arquivos da CBA.
 # MAGIC - As 4 plantas da CBA na última célula (Alumínio-SP, Miraí, Poços de Caldas, Zona da Mata).
 # MAGIC

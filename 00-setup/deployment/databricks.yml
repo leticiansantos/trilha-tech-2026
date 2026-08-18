@@ -1,6 +1,6 @@
 # Databricks Asset Bundle — Trilha Tech 2026 CBA
 # Provisiona o ambiente das 3 trilhas: importa os notebooks e cria um job que
-# carrega a camada gold canônica (cba_trilha_tech.gold.*).
+# carrega a camada gold canônica (cba_workshop_trilha_tech.gold.*).
 #
 # Uso:
 #   databricks bundle validate -t dev
@@ -14,7 +14,7 @@ bundle:
 variables:
   catalog:
     description: Catálogo Unity Catalog das trilhas
-    default: cba_trilha_tech
+    default: cba_workshop_trilha_tech
   catalog_location:
     description: "Storage location para o catálogo (ex: abfss://... ou s3://...). Vazio = usa default do metastore."
     default: ""
