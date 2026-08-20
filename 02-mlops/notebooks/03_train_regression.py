@@ -68,8 +68,10 @@ print(f"Treino: {X_train.shape} | Teste: {X_test.shape}")
 # MAGIC
 # MAGIC ### 💬 Genie Code
 # MAGIC > *"Treine uma regressão linear do scikit-learn para prever `energy_kwh_ton` a partir de
-# MAGIC > `temperature_c`, `amperage_ka`, `anode_effect`, `bath_ratio` e `alumina_feed_rate`,
-# MAGIC > com mlflow.autolog ativado."*
+# MAGIC > `temperature_c`, `amperage_ka`, `anode_effect`, `bath_ratio` e `alumina_feed_rate`, com
+# MAGIC > `mlflow.autolog` ativado. Treine em `X_train`/`y_train`, avalie em `X_test`/`y_test` e calcule
+# MAGIC > o RMSE de teste com `np.sqrt(mean_squared_error(...))` (NÃO use `squared=False`, removido no
+# MAGIC > scikit-learn recente), além de R² e MAE. Registre `test_rmse`, `test_r2` e `test_mae`."*
 
 # COMMAND ----------
 
@@ -77,7 +79,9 @@ print(f"Treino: {X_train.shape} | Teste: {X_test.shape}")
 # do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
 # 💡 Contrato: ative `mlflow.sklearn.autolog()` e treine uma LinearRegression (X_train/y_train)
 #    dentro de um `mlflow.start_run(...)`, logando as métricas de teste `test_rmse`, `test_r2`,
-#    `test_mae` (usadas na comparação de runs adiante).
+#    `test_mae` (usadas na comparação de runs adiante). Calcule o RMSE com
+#    `np.sqrt(mean_squared_error(y_test, y_pred))` — o argumento `squared=False` foi removido no
+#    scikit-learn >= 1.6.
 
 # COMMAND ----------
 
@@ -87,15 +91,18 @@ print(f"Treino: {X_train.shape} | Teste: {X_test.shape}")
 # MAGIC `GradientBoostingRegressor` e comparar com o baseline.
 # MAGIC
 # MAGIC ### 💬 Genie Code
-# MAGIC > *"Treine um GradientBoostingRegressor para o mesmo problema e compare o RMSE de teste
-# MAGIC > com a regressão linear."*
+# MAGIC > *"Treine um GradientBoostingRegressor para o mesmo problema, dentro de um `mlflow.start_run`,
+# MAGIC > e compare o RMSE de teste com a regressão linear. Calcule o RMSE com
+# MAGIC > `np.sqrt(mean_squared_error(...))` (não use `squared=False`) e registre `test_rmse`,
+# MAGIC > `test_r2` e `test_mae`."*
 
 # COMMAND ----------
 
 # ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
 # do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
 # 💡 Contrato: treine um GradientBoostingRegressor dentro de um `mlflow.start_run(...)`, logando
-#    `test_rmse`/`test_r2`/`test_mae` para comparar com o baseline linear na próxima seção.
+#    `test_rmse`/`test_r2`/`test_mae` (RMSE via `np.sqrt(mean_squared_error(...))`, sem `squared=False`)
+#    para comparar com o baseline linear na próxima seção.
 
 # COMMAND ----------
 
