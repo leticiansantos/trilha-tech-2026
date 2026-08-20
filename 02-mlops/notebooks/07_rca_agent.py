@@ -47,7 +47,7 @@ CATALOG = "cba_workshop_trilha_tech"
 current_user = spark.sql("SELECT current_user()").collect()[0][0]
 user_prefix = current_user.split("@")[0].replace(".", "_").replace("-", "_")
 SCHEMA = f"mlops_{user_prefix}"
-GOLD = f"{CATALOG}.gold"
+GOLD = f"{CATALOG}.{SCHEMA}"  # dados criados no seu schema pelo Módulo 0 (00_setup_dados)
 spark.sql(f"USE CATALOG {CATALOG}")
 spark.sql(f"USE SCHEMA {SCHEMA}")
 mlflow.set_registry_uri("databricks-uc")

@@ -54,9 +54,10 @@ spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{SCHEMA}")
 spark.sql(f"USE CATALOG {CATALOG}")
 spark.sql(f"USE SCHEMA {SCHEMA}")
 
-# As tabelas GOLD de origem ficam no schema 'gold' do catálogo da trilha
-GOLD = f"{CATALOG}.gold"
-print(f"Schema GOLD ....: {GOLD}")
+# As tabelas de origem foram criadas no SEU schema pelo Módulo 0 (00_setup_dados).
+# Rode 00_setup_dados.py antes deste notebook.
+GOLD = f"{CATALOG}.{SCHEMA}"
+print(f"Schema de dados (GOLD): {GOLD}")
 
 # COMMAND ----------
 
@@ -71,8 +72,8 @@ print(f"Schema GOLD ....: {GOLD}")
 # MAGIC | `dim_fornos`, `dim_plantas`, `dim_ligas`, `dim_produtos` | Dimensões de negócio | Enriquecimento / contexto |
 # MAGIC | `aluminum_lme_price`, `fx_usdbrl` | Mercado (LME + câmbio) | Contexto de margem |
 # MAGIC
-# MAGIC > **Nota didática:** se na sua sala as tabelas estiverem no schema padrão e não em `gold`,
-# MAGIC > ajuste a variável `GOLD` acima. O instrutor confirma o nome no início do módulo.
+# MAGIC > **Nota didática:** estas tabelas foram criadas **no seu schema** pelo **Módulo 0**
+# MAGIC > (`00_setup_dados`). Se `SHOW TABLES` abaixo vier vazio, rode o Módulo 0 primeiro.
 
 # COMMAND ----------
 
@@ -86,7 +87,7 @@ display(spark.sql(f"SHOW TABLES IN {GOLD}"))
 # MAGIC Em vez de digitar SQL na mão, peça ao Assistant. Em uma célula **SQL** (`%sql`), abra o
 # MAGIC Assistant e digite:
 # MAGIC
-# MAGIC > *"Mostre as 20 primeiras linhas da tabela `cba_workshop_trilha_tech.gold.furnace_telemetry`
+# MAGIC > *"Mostre as 20 primeiras linhas da tabela `furnace_telemetry`
 # MAGIC > ordenadas por ts."*
 # MAGIC
 # MAGIC Reveja o SQL gerado, rode, e use **/explain** para entender cada cláusula.
@@ -119,7 +120,7 @@ display(df_telemetry.describe(
 # MAGIC %md
 # MAGIC ### 💬 Genie Code
 # MAGIC > *"Crie um DataFrame pandas com uma amostra de 50 mil linhas de
-# MAGIC > `cba_workshop_trilha_tech.gold.furnace_telemetry` para eu fazer gráficos com matplotlib/seaborn."*
+# MAGIC > `furnace_telemetry` para eu fazer gráficos com matplotlib/seaborn."*
 # MAGIC
 # MAGIC Trabalhar com uma **amostra** em pandas é mais rápido para visualização. Para o
 # MAGIC treino do modelo, voltaremos ao dataset completo (módulo 2).
@@ -163,7 +164,7 @@ display(null_counts)
 # MAGIC %md
 # MAGIC ### 💬 Genie Code
 # MAGIC > *"Calcule o percentual de valores nulos em `vibration_mm_s` na tabela
-# MAGIC > `cba_workshop_trilha_tech.gold.furnace_telemetry` e mostre o resultado em porcentagem."*
+# MAGIC > `furnace_telemetry` e mostre o resultado em porcentagem."*
 # MAGIC
 # MAGIC **Estratégia adotada:** como é ~1% e a vibração não é feature da regressão de energia,
 # MAGIC vamos **imputar pela mediana** quando ela for usada (manutenção preditiva). Para a
@@ -259,7 +260,7 @@ display(
 # MAGIC %md
 # MAGIC ### 💬 Genie Code
 # MAGIC > *"Mostre a contagem de cada `defect_type` na tabela
-# MAGIC > `cba_workshop_trilha_tech.gold.furnace_inspections` em um gráfico de barras."*
+# MAGIC > `furnace_inspections` em um gráfico de barras."*
 
 # COMMAND ----------
 

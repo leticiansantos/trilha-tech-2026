@@ -31,7 +31,7 @@ CATALOG = "cba_workshop_trilha_tech"
 current_user = spark.sql("SELECT current_user()").collect()[0][0]
 user_prefix = current_user.split("@")[0].replace(".", "_").replace("-", "_")
 SCHEMA = f"mlops_{user_prefix}"
-GOLD = f"{CATALOG}.gold"
+GOLD = f"{CATALOG}.{SCHEMA}"  # dados criados no seu schema pelo Módulo 0 (00_setup_dados)
 
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{SCHEMA}")
 spark.sql(f"USE CATALOG {CATALOG}")

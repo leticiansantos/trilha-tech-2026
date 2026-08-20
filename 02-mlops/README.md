@@ -2,13 +2,17 @@
 
 **Trilha Tech 2026 | Workshop Hands-on: MLOps na prática** — Ciência de Dados, MLOps e Agentes, ~4h.
 
-Seguindo o ciclo **CRISP-DM**, partir das tabelas `gold`, prever falha/eficiência do forno (uma
-**regressão** + uma **classificação binária**) e construir um **agente de RCA** de manutenção. Use o
-**Genie Code** em todos os passos.
+Seguindo o ciclo **CRISP-DM**, gerar os dados sintéticos no seu schema, prever falha/eficiência do
+forno (uma **regressão** + uma **classificação binária**) e construir um **agente de RCA** de
+manutenção. Use o **Genie Code** em todos os passos.
 
 ## Antes de começar
-Ambiente provisionado (ver [`../00-setup/`](../00-setup/)). Use um cluster com **Runtime ML**.
-Confirme um Foundation Model disponível para o módulo 07 (agente).
+Use um cluster com **Runtime ML** e confirme um Foundation Model disponível para o módulo 07 (agente).
+
+Esta trilha é **autocontida** — não depende da trilha de Engenharia. **Rode primeiro o Módulo 0**
+(`notebooks/00_setup_dados.py`): ele cria o seu schema pessoal (`mlops_<usuário>`) e gera todas as
+tabelas-fonte dentro dele. Pré-requisito: o catálogo `cba_workshop_trilha_tech` já deve existir (um
+admin cria uma vez) e você precisa de `CREATE SCHEMA` nele.
 
 ## Apostila
 Leia o [`workbook.md`](workbook.md) — passo a passo, prompts de Genie Code, checkpoints e exercícios.
@@ -16,6 +20,7 @@ Leia o [`workbook.md`](workbook.md) — passo a passo, prompts de Genie Code, ch
 ## Notebooks (ordem)
 | # | Notebook | Tema |
 |---|---|---|
+| 00 | `notebooks/00_setup_dados.py` | **Setup:** cria seu schema e gera os dados sintéticos (rode primeiro) |
 | 01 | `notebooks/01_eda.py` | EDA (CRISP-DM): correlações, nulos, distribuição dos labels |
 | 02 | `notebooks/02_feature_engineering.py` | Feature Engineering no Unity Catalog |
 | 03 | `notebooks/03_train_regression.py` | Regressão: prever `energy_kwh_ton` (eficiência) |

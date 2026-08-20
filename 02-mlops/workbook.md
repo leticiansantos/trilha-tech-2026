@@ -12,9 +12,10 @@ telemetria **Gorila**, e termina vendido a um **preço de mercado** que depende 
 e do **dólar**. A margem da empresa é a diferença entre esse preço e o **custo de produção** — e
 o maior componente do custo é a **energia**.
 
-Nesta trilha de **MLOps** você vai consumir as tabelas **GOLD** preparadas pela trilha de
-Engenharia e construir, ponta a ponta, uma solução de Machine Learning que ataca custo e
-qualidade — e ainda um **agente de IA** para apoiar a manutenção.
+Nesta trilha de **MLOps** você mesmo vai **gerar os dados sintéticos** (Módulo 0, no seu schema) e
+construir, ponta a ponta, uma solução de Machine Learning que ataca custo e qualidade — e ainda um
+**agente de IA** para apoiar a manutenção. A trilha é **autocontida**: não é preciso ter feito a
+trilha de Engenharia.
 
 ### O que você vai construir
 1. 🔢 **Regressão** — prever a energia por tonelada (`energy_kwh_ton`) dos fornos.
@@ -39,11 +40,13 @@ Você **não precisa decorar sintaxe**. Em todos os módulos vamos gerar código
 ---
 
 ## Pré-requisitos
-- Acesso ao workspace Databricks da CBA e ao catálogo `cba_workshop_trilha_tech`.
+- Acesso ao workspace Databricks da CBA e ao catálogo `cba_workshop_trilha_tech` (um admin cria o
+  catálogo uma vez; você precisa de `CREATE SCHEMA` nele).
 - Um cluster (ou compute) com **Databricks Runtime for Machine Learning** (traz scikit-learn,
   MLflow, AutoML, XGBoost).
 - Noções básicas de Python e SQL ajudam, mas **não são obrigatórias** — o Genie Code cobre a lacuna.
 - Permissão para criar seu schema pessoal e endpoints de serving (o instrutor confirma).
+- **Não é necessário ter feito a trilha de Engenharia** — o Módulo 0 gera todos os dados.
 
 ---
 
@@ -52,6 +55,7 @@ Você **não precisa decorar sintaxe**. Em todos os módulos vamos gerar código
 | Tempo | Módulo | Etapa CRISP-DM | Notebook |
 |---|---|---|---|
 | 0:00–0:20 | **Abertura** — narrativa, CRISP-DM, MLOps no Databricks, o que é Genie Code e o que é um agente | Entendimento do Negócio | — |
+| — | **Módulo 0** — Setup: cria seu schema e gera os dados sintéticos (rode uma vez, antes de tudo) | Preparação do ambiente | `00_setup_dados.py` |
 | 0:20–0:50 | **Módulo 1** — EDA: estatísticas, correlações, nulos, distribuição de labels | Entendimento dos Dados | `01_eda.py` |
 | 0:50–1:20 | **Módulo 2** — Feature Engineering em Unity Catalog, split treino/teste | Preparação | `02_feature_engineering.py` |
 | 1:20–1:50 | **Módulo 3** — Regressão (energia) com MLflow autolog, comparação de runs | Modelagem | `03_train_regression.py` |
@@ -63,13 +67,33 @@ Você **não precisa decorar sintaxe**. Em todos os módulos vamos gerar código
 
 ---
 
+## Módulo 0 — Setup dos dados (rode uma vez, antes de tudo)
+
+**Por quê:** esta trilha é autocontida — em vez de depender das tabelas `gold` da Engenharia, você
+gera os dados sintéticos direto no **seu schema pessoal**.
+
+**Passo a passo:**
+1. Abra `00_setup_dados.py`. Rode a célula de configuração — ela cria seu schema `mlops_<seu_usuario>`
+   no catálogo `cba_workshop_trilha_tech`.
+2. Rode as células de geração — elas criam as tabelas Delta no seu schema: `furnace_telemetry`,
+   `furnace_inspections`, `dim_plantas`, `dim_ligas`, `dim_produtos`, `dim_fornos`,
+   `aluminum_lme_price`, `fx_usdbrl` (~100 mil linhas de telemetria; `seed=42`, determinístico).
+3. Confira a validação final (contagens e balanceamento de `is_failure` e `is_defect`).
+
+> ℹ️ Se o catálogo `cba_workshop_trilha_tech` não existir, peça a um admin para criá-lo uma vez.
+
+**✅ Checkpoint:** `SHOW TABLES` no seu schema lista as 8 tabelas acima.
+
+---
+
 ## Módulo 1 — EDA: entender os dados antes de modelar
 
 **Contexto CBA:** energia é o maior custo do alumínio. Antes de prever qualquer coisa, precisamos
 saber como a energia se relaciona com as variáveis do forno.
 
 **Passo a passo:**
-1. Abra `01_eda.py`. Rode a célula de configuração (cria seu schema `mlops_<seu_usuario>`).
+1. Abra `01_eda.py`. Rode a célula de configuração (usa seu schema `mlops_<seu_usuario>`, criado no
+   Módulo 0). A variável `GOLD` aponta para o **seu schema**.
 2. Inspecione `furnace_telemetry`: schema, contagem, amostra.
 3. Gere as **estatísticas descritivas** das colunas numéricas.
 4. Conte os **nulos** — note ~1% em `vibration_mm_s` — e veja a estratégia de imputação pela mediana.
@@ -77,7 +101,7 @@ saber como a energia se relaciona com as variáveis do forno.
 6. Veja a **distribuição dos labels** `is_failure` (~1,5%) e `is_defect` (~10%).
 
 > 💬 **Genie Code:** *"Crie um DataFrame pandas com uma amostra de 50 mil linhas de
-> `cba_workshop_trilha_tech.gold.furnace_telemetry` para gráficos."*
+> `furnace_telemetry` para gráficos."*
 
 **✅ Checkpoint:** Você consegue dizer qual variável prever na regressão e na classificação, e que
 a energia **sobe** com a temperatura.
@@ -215,7 +239,8 @@ e reproduza o agente no AI Playground.
 
 | Sintoma | Causa provável | Solução |
 |---|---|---|
-| `Table or view not found` no schema `gold` | Tabelas em outro schema na sua sala | Ajuste a variável `GOLD` (o instrutor informa o nome) |
+| `Table or view not found` / `SHOW TABLES` vazio | Módulo 0 não foi executado (dados não gerados) | Rode `00_setup_dados.py` primeiro; ele cria as tabelas no seu schema |
+| `Schema/Catalog não encontrado` ou sem permissão de `CREATE SCHEMA` | Catálogo `cba_workshop_trilha_tech` não existe ou faltam grants | Peça a um admin para criar o catálogo uma vez e conceder `CREATE SCHEMA` |
 | `mlflow.register_model` falha com permissão | Registry apontando para o Workspace legado | Garanta `mlflow.set_registry_uri("databricks-uc")` |
 | `databricks.automl` não importa | Cluster sem Runtime ML | Troque para um cluster **ML** |
 | Endpoint de serving fica em `NOT_READY` por muito tempo | Provisionamento inicial | Aguarde 5–10 min; rode a célula de consulta de novo |
