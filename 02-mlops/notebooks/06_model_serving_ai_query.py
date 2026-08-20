@@ -11,8 +11,10 @@
 # MAGIC
 # MAGIC ---
 # MAGIC ### 💬 Genie Code
-# MAGIC > *"Crie um endpoint de Model Serving servindo a versão @champion do modelo
-# MAGIC > `furnace_energy_regressor` do Unity Catalog, com scale-to-zero habilitado."*
+# MAGIC > *"Crie um endpoint de Model Serving servindo a versão @champion do modelo indicado pela
+# MAGIC > variável `MODEL_NAME` (já definida na célula de configuração com o nome totalmente
+# MAGIC > qualificado no Unity Catalog), com scale-to-zero habilitado. Referencie a variável
+# MAGIC > `MODEL_NAME`; não escreva o nome do modelo à mão."*
 
 # COMMAND ----------
 

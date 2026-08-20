@@ -21,8 +21,11 @@
 # MAGIC
 # MAGIC ---
 # MAGIC ### 💬 Genie Code
-# MAGIC > *"Crie uma função SQL no Unity Catalog que recebe um furnace_id e retorna as médias de
-# MAGIC > temperatura, amperagem, efeito anódico e vibração desse forno na tabela furnace_telemetry."*
+# MAGIC > *"Crie uma função SQL no Unity Catalog `get_furnace_telemetry_stats(furnace_id_in INT)` que
+# MAGIC > retorna as médias de temperatura, amperagem, efeito anódico e vibração desse forno a partir
+# MAGIC > da telemetria. Qualifique o nome da função e da tabela com as variáveis `CATALOG`, `SCHEMA` e
+# MAGIC > `GOLD` dentro do f-string do `spark.sql(...)`, exatamente como nas funções de exemplo
+# MAGIC > `get_furnace_quality` / `get_furnace_failure_rate` logo abaixo."*
 
 # COMMAND ----------
 
@@ -74,11 +77,11 @@ print(f"LLM endpoint   : {LLM_ENDPOINT}")
 
 # ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
 # do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
-# 💡 Contrato: crie a função UC `{CATALOG}.{SCHEMA}.get_furnace_telemetry_stats(furnace_id_in INT)`
-#    que retorna as médias de temperatura, amperagem, efeito anódico, vibração e energia a partir de
-#    `{GOLD}.furnace_telemetry`. Ela é anexada como ferramenta (tool) do agente mais adiante.
-#    (As outras duas funções, get_furnace_quality e get_furnace_failure_rate, já vêm prontas abaixo
-#    como referência do padrão.)
+# 💡 Contrato: crie a função UC get_furnace_telemetry_stats(furnace_id_in INT) que retorna as médias
+#    de temperatura, amperagem, efeito anódico, vibração e energia. Qualifique o nome da função e a
+#    tabela de origem com as variáveis CATALOG/SCHEMA/GOLD dentro do f-string do spark.sql (como nas
+#    funções get_furnace_quality / get_furnace_failure_rate logo abaixo) — não deixe as chaves {...}
+#    como texto literal. Ela é anexada como ferramenta (tool) do agente mais adiante.
 
 # COMMAND ----------
 

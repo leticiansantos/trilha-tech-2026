@@ -81,8 +81,10 @@ display(df_reg.limit(5))
 # MAGIC **chave primária** declarada.
 # MAGIC
 # MAGIC ### 💬 Genie Code
-# MAGIC > *"Crie uma feature table no Unity Catalog chamada `furnace_energy_features` com chave
-# MAGIC > primária `reading_id` a partir do DataFrame `df_reg` usando o FeatureEngineeringClient."*
+# MAGIC > *"Usando o FeatureEngineeringClient, crie uma Feature Table no Unity Catalog a partir do
+# MAGIC > DataFrame `df_reg`, com chave primária `reading_id`. Use como nome da tabela o valor de
+# MAGIC > `f"{CATALOG}.{SCHEMA}.furnace_energy_features"` — monte o nome com as variáveis Python
+# MAGIC > `CATALOG` e `SCHEMA` já definidas, com f-string; NÃO passe as chaves `{...}` como texto literal."*
 
 # COMMAND ----------
 
@@ -93,9 +95,9 @@ display(df_reg.limit(5))
 
 # ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
 # do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
-# 💡 Contrato: crie a Feature Table `{CATALOG}.{SCHEMA}.furnace_energy_features` (chave primária
-#    `reading_id`) a partir de `df_reg`, usando o FeatureEngineeringClient. (A dependência já foi
-#    instalada na célula %pip acima.)
+# 💡 Contrato: crie a Feature Table com nome f"{CATALOG}.{SCHEMA}.furnace_energy_features" (f-string
+#    com as variáveis já definidas — NÃO string literal), chave primária `reading_id`, a partir de
+#    `df_reg`, usando o FeatureEngineeringClient. (A dependência já foi instalada na célula %pip acima.)
 
 # COMMAND ----------
 

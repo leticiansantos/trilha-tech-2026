@@ -17,8 +17,10 @@
 # MAGIC
 # MAGIC ---
 # MAGIC ### 💬 Genie Code
-# MAGIC > *"Use o MlflowClient para listar as versões do modelo `furnace_energy_regressor` no
-# MAGIC > Unity Catalog e definir o alias `champion` na versão 1."*
+# MAGIC > *"Use o MlflowClient para listar as versões do modelo indicado pela variável `MODEL_NAME`
+# MAGIC > (já definida na célula de configuração com o nome totalmente qualificado
+# MAGIC > `catálogo.schema.furnace_energy_regressor`) e definir o alias `champion` na versão 1.
+# MAGIC > Referencie a variável `MODEL_NAME`; não escreva o nome do modelo à mão."*
 
 # COMMAND ----------
 
