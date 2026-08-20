@@ -25,12 +25,30 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 0. Instalação de dependências
+# MAGIC ## 0. Pré-requisito de compute — **cluster ML Runtime**
+# MAGIC Este módulo usa a **API `databricks.automl`**, disponível **somente** no **Databricks Runtime
+# MAGIC for Machine Learning** (cluster ML clássico, ex.: **DBR 15.4 ML** ou superior). Ela **não**
+# MAGIC existe em compute **Serverless** e **não** pode ser instalada via `pip`. Antes de rodar, anexe
+# MAGIC este notebook a um cluster **ML Runtime** (no seletor de compute, escolha uma versão "…ML").
+# MAGIC
+# MAGIC > Alternativas se precisar ficar em Serverless: rode a **AutoML pela UI**
+# MAGIC > (Experiments → Create AutoML Experiment) num cluster ML Runtime, ou treine modelos
+# MAGIC > manualmente com scikit-learn (como nos Módulos 3 e 5) e registre no MLflow.
 
 # COMMAND ----------
 
-# MAGIC %pip install databricks-automl-runtime
-# MAGIC dbutils.library.restartPython()
+# Verificação de compute: a API databricks.automl só existe em cluster ML Runtime.
+# (No ML Runtime ela já vem pré-instalada — não é preciso pip install.)
+try:
+    import databricks.automl as automl
+    print("✓ databricks.automl disponível — você está em um cluster ML Runtime. Pode seguir.")
+except (ImportError, ModuleNotFoundError) as e:
+    raise RuntimeError(
+        "databricks.automl não está disponível neste compute. Este módulo exige um cluster com "
+        "Databricks Runtime for Machine Learning (ex.: DBR 15.4 ML ou superior) — não roda em "
+        "Serverless e não pode ser instalado via pip. Anexe este notebook a um cluster ML Runtime "
+        "e rode novamente. (Alternativas: AutoML pela UI, ou modelos manuais com scikit-learn.)"
+    ) from e
 
 # COMMAND ----------
 

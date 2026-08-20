@@ -155,7 +155,12 @@ feature table.
 
 **Contexto CBA:** antecipar defeitos reduz refugo e retrabalho — perda direta de margem.
 
+> ⚠️ **Compute:** este módulo exige um cluster **ML Runtime** (ex.: DBR 15.4 ML+). A API
+> `databricks.automl` não existe em Serverless nem pode ser instalada via `pip`. A célula 0 do
+> notebook verifica o compute e avisa se você não estiver no ML Runtime.
+
 **Passo a passo:**
+0. Confirme que está num cluster **ML Runtime** (a célula 0 do notebook valida isso).
 1. Prepare a entrada removendo IDs (`inspection_id`, `furnace_id`).
 2. Rode `automl.classify(..., primary_metric="f1", pos_label=1)` (F1 para classe desbalanceada).
 3. Abra o **notebook glass-box** do melhor modelo (`summary.best_trial.notebook_path`) e leia o código.
@@ -242,7 +247,7 @@ e reproduza o agente no AI Playground.
 | `Table or view not found` / `SHOW TABLES` vazio | Módulo 0 não foi executado (dados não gerados) | Rode `00_setup_dados.py` primeiro; ele cria as tabelas no seu schema |
 | `Schema/Catalog não encontrado` ou sem permissão de `CREATE SCHEMA` | Catálogo `cba_workshop_trilha_tech` não existe ou faltam grants | Peça a um admin para criar o catálogo uma vez e conceder `CREATE SCHEMA` |
 | `mlflow.register_model` falha com permissão | Registry apontando para o Workspace legado | Garanta `mlflow.set_registry_uri("databricks-uc")` |
-| `databricks.automl` não importa | Cluster sem Runtime ML | Troque para um cluster **ML** |
+| `No module named databricks.automl` (ex.: em Serverless) | AutoML só existe no **ML Runtime** | Anexe um cluster **DBR ML** (15.4 ML+). Não roda em Serverless nem via `pip`. O próprio Módulo 4 (célula 0) verifica isso e avisa. |
 | Endpoint de serving fica em `NOT_READY` por muito tempo | Provisionamento inicial | Aguarde 5–10 min; rode a célula de consulta de novo |
 | `ai_query` retorna erro de endpoint | Endpoint ainda não `READY` | Espere o endpoint ficar pronto |
 | Agente: `endpoint not found` no LLM | Foundation Model não disponível na workspace | Troque `LLM_ENDPOINT` por um FM listado em Serving → Foundation models |
