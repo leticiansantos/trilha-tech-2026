@@ -91,28 +91,11 @@ display(df_reg.limit(5))
 
 # COMMAND ----------
 
-from databricks.feature_engineering import FeatureEngineeringClient
-
-fe = FeatureEngineeringClient()
-
-FEATURE_TABLE_REG = f"{CATALOG}.{SCHEMA}.furnace_energy_features"
-
-# Remove versão anterior (caso o aluno reexecute o notebook)
-try:
-    fe.drop_table(name=FEATURE_TABLE_REG)
-except Exception as e:
-    print(f"(tabela ainda não existia: {e})")
-
-fe.create_table(
-    name=FEATURE_TABLE_REG,
-    primary_keys=["reading_id"],
-    df=df_reg.select("reading_id", "furnace_id",
-                     "temperature_c", "amperage_ka", "anode_effect",
-                     "bath_ratio", "alumina_feed_rate", "energy_kwh_ton"),
-    description="Features de telemetria de fornos para prever energia (kWh/ton). CBA Trilha Tech 2026.",
-)
-print(f"Feature Table criada: {FEATURE_TABLE_REG}")
-display(spark.table(FEATURE_TABLE_REG).limit(5))
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: crie a Feature Table `{CATALOG}.{SCHEMA}.furnace_energy_features` (chave primária
+#    `reading_id`) a partir de `df_reg`, usando o FeatureEngineeringClient. (A dependência já foi
+#    instalada na célula %pip acima.)
 
 # COMMAND ----------
 
@@ -145,40 +128,11 @@ print(f"Treino: {train_reg.count():,} linhas | Teste: {test_reg.count():,} linha
 
 # COMMAND ----------
 
-# Agregação da telemetria por forno (estado operacional médio)
-furnace_agg = (
-    spark.table(f"{GOLD}.furnace_telemetry")
-    .groupBy("furnace_id")
-    .agg(
-        F.avg("temperature_c").alias("avg_temperature_c"),
-        F.avg("amperage_ka").alias("avg_amperage_ka"),
-        F.avg("anode_effect").alias("avg_anode_effect"),
-        F.avg("vibration_mm_s").alias("avg_vibration_mm_s"),
-        F.avg("energy_kwh_ton").alias("avg_energy_kwh_ton"),
-    )
-)
-
-df_inspections = spark.table(f"{GOLD}.furnace_inspections")
-
-df_clf = (
-    df_inspections
-    .join(furnace_agg, on="furnace_id", how="left")
-    .select(
-        "inspection_id", "furnace_id", "alloy_id", "product_id",
-        # features
-        "surface_quality_score",
-        "avg_temperature_c", "avg_amperage_ka", "avg_anode_effect", "avg_vibration_mm_s",
-        # alvo
-        "is_defect",
-    )
-)
-
-# Imputa eventuais nulos de vibração média pela mediana (visto no Módulo 1)
-median_vib = df_clf.approxQuantile("avg_vibration_mm_s", [0.5], 0.01)[0]
-df_clf = df_clf.fillna({"avg_vibration_mm_s": median_vib})
-
-print(f"Linhas para classificação: {df_clf.count():,}")
-display(df_clf.limit(5))
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: produza o DataFrame `df_clf` — inspeções (`furnace_inspections`) enriquecidas com as
+#    médias de telemetria por forno (avg_temperature_c, avg_amperage_ka, avg_anode_effect,
+#    avg_vibration_mm_s) e o alvo `is_defect`. Ele é salvo como `defect_dataset` na célula seguinte.
 
 # COMMAND ----------
 

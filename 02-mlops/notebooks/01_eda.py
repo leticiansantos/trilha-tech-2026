@@ -94,11 +94,10 @@ display(spark.sql(f"SHOW TABLES IN {GOLD}"))
 
 # COMMAND ----------
 
-# Carregamos a telemetria em um DataFrame Spark e olhamos a estrutura
-df_telemetry = spark.table(f"{GOLD}.furnace_telemetry")
-print(f"Linhas de telemetria: {df_telemetry.count():,}")
-df_telemetry.printSchema()
-display(df_telemetry.limit(10))
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: carregue a telemetria no DataFrame `df_telemetry` (de f"{GOLD}.furnace_telemetry") —
+#    ele é usado em quase todas as células seguintes.
 
 # COMMAND ----------
 
@@ -127,17 +126,10 @@ display(df_telemetry.describe(
 
 # COMMAND ----------
 
-# Amostra para visualização (pandas é confortável para gráficos)
-pdf = (
-    df_telemetry
-    .select("temperature_c", "amperage_ka", "bath_ratio", "anode_effect",
-            "alumina_feed_rate", "energy_kwh_ton", "vibration_mm_s", "is_failure")
-    .sample(fraction=0.05, seed=42)
-    .limit(50_000)
-    .toPandas()
-)
-print(f"Amostra para EDA: {len(pdf):,} linhas")
-pdf.head()
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: crie o DataFrame pandas `pdf` (amostra ~50k linhas de df_telemetry) — usado nas
+#    células de correlação e no scatter energia × temperatura mais adiante.
 
 # COMMAND ----------
 
@@ -172,13 +164,8 @@ display(null_counts)
 
 # COMMAND ----------
 
-# Imputação pela mediana (demonstração) — útil no módulo de manutenção preditiva
-median_vibration = df_telemetry.approxQuantile("vibration_mm_s", [0.5], 0.01)[0]
-print(f"Mediana da vibração (para imputação): {median_vibration:.3f} mm/s")
-
-df_telemetry_imputed = df_telemetry.fillna({"vibration_mm_s": median_vibration})
-remaining_nulls = df_telemetry_imputed.filter(F.col("vibration_mm_s").isNull()).count()
-print(f"Nulos restantes após imputação: {remaining_nulls}")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
 
 # COMMAND ----------
 
@@ -213,16 +200,8 @@ display(fig)
 
 # COMMAND ----------
 
-# Dispersão energia × temperatura (a relação que vamos modelar na regressão)
-fig, ax = plt.subplots(figsize=(8, 6))
-sample_plot = pdf.sample(n=min(5000, len(pdf)), random_state=42)
-sns.regplot(data=sample_plot, x="temperature_c", y="energy_kwh_ton",
-            scatter_kws={"alpha": 0.15, "s": 10}, line_kws={"color": "red"}, ax=ax)
-ax.set_title("Energia por tonelada × Temperatura do banho")
-ax.set_xlabel("Temperatura (°C)")
-ax.set_ylabel("Energia (kWh/ton)")
-plt.tight_layout()
-display(fig)
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
 
 # COMMAND ----------
 
@@ -264,18 +243,8 @@ display(
 
 # COMMAND ----------
 
-# Relação entre qualidade de superfície e defeito — a feature mais preditiva
-pdf_insp = df_inspections.select(
-    "surface_quality_score", "is_defect", "defect_type"
-).toPandas()
-
-fig, ax = plt.subplots(figsize=(8, 5))
-sns.boxplot(data=pdf_insp, x="is_defect", y="surface_quality_score", ax=ax)
-ax.set_title("Qualidade de superfície × Defeito")
-ax.set_xlabel("is_defect (0 = OK, 1 = defeito)")
-ax.set_ylabel("surface_quality_score")
-plt.tight_layout()
-display(fig)
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
 
 # COMMAND ----------
 

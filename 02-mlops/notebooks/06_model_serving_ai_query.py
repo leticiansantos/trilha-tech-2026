@@ -52,33 +52,10 @@ print(f"Endpoint: {ENDPOINT_NAME}")
 
 # COMMAND ----------
 
-from databricks.sdk import WorkspaceClient
-from databricks.sdk.service.serving import (
-    EndpointCoreConfigInput, ServedEntityInput,
-)
-
-w = WorkspaceClient()
-
-served_entity = ServedEntityInput(
-    entity_name=MODEL_NAME,
-    entity_version=champion.version,
-    scale_to_zero_enabled=True,
-    workload_size="Small",
-)
-
-existing = [e.name for e in w.serving_endpoints.list()]
-if ENDPOINT_NAME in existing:
-    print(f"Endpoint '{ENDPOINT_NAME}' já existe — atualizando a configuração...")
-    w.serving_endpoints.update_config(
-        name=ENDPOINT_NAME, served_entities=[served_entity]
-    )
-else:
-    print(f"Criando endpoint '{ENDPOINT_NAME}'...")
-    w.serving_endpoints.create(
-        name=ENDPOINT_NAME,
-        config=EndpointCoreConfigInput(served_entities=[served_entity]),
-    )
-print("Solicitação enviada. Acompanhe em: Serving (barra lateral) -> seu endpoint.")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: crie `w = WorkspaceClient()` e o endpoint `ENDPOINT_NAME` servindo MODEL_NAME na
+#    versão @champion, com `scale_to_zero_enabled=True`. `w` é reutilizado nas células REST adiante.
 
 # COMMAND ----------
 
@@ -94,23 +71,12 @@ print("Solicitação enviada. Acompanhe em: Serving (barra lateral) -> seu endpo
 
 # COMMAND ----------
 
-from pyspark.sql import functions as F
-
-FEATURES = ["temperature_c", "amperage_ka", "anode_effect", "bath_ratio", "alumina_feed_rate"]
-
-predict_udf = mlflow.pyfunc.spark_udf(
-    spark, model_uri=f"models:/{MODEL_NAME}@champion", result_type="double"
-)
-
-batch = (
-    spark.table(f"{CATALOG}.{SCHEMA}.energy_test")
-    .withColumn("predicted_energy_kwh_ton", predict_udf(*[F.col(c) for c in FEATURES]))
-)
-batch.select(*FEATURES, "energy_kwh_ton", "predicted_energy_kwh_ton").show(10)
-
-# Salva as previsões em lote para a trilha de Insights consumir
-batch.write.mode("overwrite").saveAsTable(f"{CATALOG}.{SCHEMA}.energy_predictions")
-print(f"Previsões em lote salvas em {CATALOG}.{SCHEMA}.energy_predictions")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: importe `pyspark.sql.functions as F`, crie `predict_udf` com
+#    `mlflow.pyfunc.spark_udf(... models:/{MODEL_NAME}@champion ...)`, gere a coluna
+#    `predicted_energy_kwh_ton` sobre `energy_test` e salve a tabela `energy_predictions`
+#    (usada no alerta de fornos ineficientes adiante).
 
 # COMMAND ----------
 
@@ -170,28 +136,11 @@ except Exception as e:
 
 # COMMAND ----------
 
-# Versão executável do ai_query (monta o SQL com o nome do endpoint do aluno)
-sql_ai_query = f"""
-SELECT
-  temperature_c, amperage_ka, anode_effect, bath_ratio, alumina_feed_rate,
-  energy_kwh_ton AS energia_real,
-  ai_query(
-    '{ENDPOINT_NAME}',
-    named_struct(
-      'temperature_c', temperature_c,
-      'amperage_ka', amperage_ka,
-      'anode_effect', anode_effect,
-      'bath_ratio', bath_ratio,
-      'alumina_feed_rate', alumina_feed_rate
-    )
-  ) AS energia_prevista
-FROM {CATALOG}.{SCHEMA}.energy_test
-LIMIT 5
-"""
-try:
-    display(spark.sql(sql_ai_query))
-except Exception as e:
-    print(f"ai_query exige o endpoint READY. Detalhe: {e}")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução aqui. Revise com /explain antes de rodar.
+# 💡 Dica: rode o `ai_query(...)` numa célula %sql (use o modelo SQL de referência acima,
+#    trocando <ENDPOINT_NAME> pelo nome do seu endpoint), OU monte o SQL em Python e execute com
+#    `spark.sql(...)`. Requer o endpoint em estado READY.
 
 # COMMAND ----------
 

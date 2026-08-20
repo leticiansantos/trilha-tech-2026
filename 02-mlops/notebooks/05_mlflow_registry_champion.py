@@ -65,9 +65,10 @@ print(f"\nVersão mais recente: {latest_version}")
 
 # COMMAND ----------
 
-# Garante um champion: usa a versão 1 como champion inicial
-client.set_registered_model_alias(name=MODEL_NAME, alias="champion", version=1)
-print(f"Alias 'champion' -> versão 1 de {MODEL_NAME}")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: defina o alias `champion` para a versão 1 de MODEL_NAME
+#    (client.set_registered_model_alias). A listagem de versões já foi feita na célula anterior.
 
 # COMMAND ----------
 

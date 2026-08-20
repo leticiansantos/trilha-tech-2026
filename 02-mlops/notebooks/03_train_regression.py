@@ -74,28 +74,11 @@ print(f"Treino: {X_train.shape} | Teste: {X_test.shape}")
 
 # COMMAND ----------
 
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-import numpy as np
-
-mlflow.sklearn.autolog(log_input_examples=True, log_models=True)
-
-with mlflow.start_run(run_name="linear_regression_baseline") as run:
-    lr = LinearRegression()
-    lr.fit(X_train, y_train)
-
-    preds = lr.predict(X_test)
-    rmse = float(np.sqrt(mean_squared_error(y_test, preds)))
-    r2 = float(r2_score(y_test, preds))
-    mae = float(mean_absolute_error(y_test, preds))
-
-    # Métricas de teste explícitas (autolog loga as de treino; logamos as de teste)
-    mlflow.log_metric("test_rmse", rmse)
-    mlflow.log_metric("test_r2", r2)
-    mlflow.log_metric("test_mae", mae)
-
-    print(f"[Linear] RMSE={rmse:.1f} kWh/ton | R²={r2:.3f} | MAE={mae:.1f}")
-    baseline_run_id = run.info.run_id
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: ative `mlflow.sklearn.autolog()` e treine uma LinearRegression (X_train/y_train)
+#    dentro de um `mlflow.start_run(...)`, logando as métricas de teste `test_rmse`, `test_r2`,
+#    `test_mae` (usadas na comparação de runs adiante).
 
 # COMMAND ----------
 
@@ -110,23 +93,10 @@ with mlflow.start_run(run_name="linear_regression_baseline") as run:
 
 # COMMAND ----------
 
-from sklearn.ensemble import GradientBoostingRegressor
-
-with mlflow.start_run(run_name="gradient_boosting_challenger") as run:
-    gbr = GradientBoostingRegressor(n_estimators=200, max_depth=4, learning_rate=0.1, random_state=42)
-    gbr.fit(X_train, y_train)
-
-    preds = gbr.predict(X_test)
-    rmse = float(np.sqrt(mean_squared_error(y_test, preds)))
-    r2 = float(r2_score(y_test, preds))
-    mae = float(mean_absolute_error(y_test, preds))
-
-    mlflow.log_metric("test_rmse", rmse)
-    mlflow.log_metric("test_r2", r2)
-    mlflow.log_metric("test_mae", mae)
-
-    print(f"[GBR] RMSE={rmse:.1f} kWh/ton | R²={r2:.3f} | MAE={mae:.1f}")
-    gbr_run_id = run.info.run_id
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: treine um GradientBoostingRegressor dentro de um `mlflow.start_run(...)`, logando
+#    `test_rmse`/`test_r2`/`test_mae` para comparar com o baseline linear na próxima seção.
 
 # COMMAND ----------
 

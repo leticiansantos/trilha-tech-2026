@@ -72,20 +72,13 @@ print(f"LLM endpoint   : {LLM_ENDPOINT}")
 
 # COMMAND ----------
 
-spark.sql(f"""
-CREATE OR REPLACE FUNCTION {CATALOG}.{SCHEMA}.get_furnace_telemetry_stats(furnace_id_in INT)
-RETURNS TABLE (
-  avg_temperature_c DOUBLE, avg_amperage_ka DOUBLE,
-  avg_anode_effect DOUBLE, avg_vibration_mm_s DOUBLE, avg_energy_kwh_ton DOUBLE
-)
-COMMENT 'Retorna o estado operacional médio (temperatura, amperagem, efeito anódico, vibração, energia) de uma cuba/forno a partir da telemetria.'
-RETURN
-  SELECT avg(temperature_c), avg(amperage_ka), avg(anode_effect),
-         avg(vibration_mm_s), avg(energy_kwh_ton)
-  FROM {GOLD}.furnace_telemetry
-  WHERE furnace_id = furnace_id_in
-""")
-print("Função criada: get_furnace_telemetry_stats")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: crie a função UC `{CATALOG}.{SCHEMA}.get_furnace_telemetry_stats(furnace_id_in INT)`
+#    que retorna as médias de temperatura, amperagem, efeito anódico, vibração e energia a partir de
+#    `{GOLD}.furnace_telemetry`. Ela é anexada como ferramenta (tool) do agente mais adiante.
+#    (As outras duas funções, get_furnace_quality e get_furnace_failure_rate, já vêm prontas abaixo
+#    como referência do padrão.)
 
 # COMMAND ----------
 
@@ -221,32 +214,11 @@ _ = ask("Compare a taxa de falha dos fornos 1 e 5 e diga qual exige mais atenç�
 
 # COMMAND ----------
 
-# Manuais sintéticos (conhecimento de domínio para o RAG)
-manuais = [
-    (1, "Efeito anódico recorrente",
-     "Efeito anódico recorrente indica baixa concentração de alumina no banho. "
-     "Verifique o sistema de alimentação de alumina (alumina_feed_rate), ajuste a dosagem "
-     "e inspecione os anodos. Reduz consumo de energia e emissões de PFC."),
-    (2, "Desvio de temperatura do banho",
-     "A temperatura ideal do banho é ~960 C. Desvios acima de 965 C aumentam o consumo de "
-     "energia (kWh/ton) e o desgaste do revestimento. Ajuste a corrente (amperage_ka) e a "
-     "razão de banho (bath_ratio)."),
-    (3, "Vibração elevada",
-     "Vibração acima de 4 mm/s sugere desbalanceamento mecânico ou folga estrutural. "
-     "Agende inspeção mecânica e verifique a fixação das barras catódicas."),
-    (4, "Baixa qualidade de superfície",
-     "Quedas em surface_quality_score correlacionam com porosidade e inclusões. "
-     "Revise a filtragem do metal líquido e a temperatura de vazamento."),
-    (5, "Alta taxa de falha",
-     "Taxa de falha elevada combina efeito anódico, vibração e desvio térmico. "
-     "Priorize manutenção preditiva no forno e monitore os três sinais em conjunto."),
-]
-df_manuais = spark.createDataFrame(manuais, ["id", "titulo", "conteudo"])
-MANUALS_TABLE = f"{CATALOG}.{SCHEMA}.maintenance_manuals"
-(df_manuais.write.mode("overwrite")
- .option("delta.enableChangeDataFeed", "true")
- .saveAsTable(MANUALS_TABLE))
-print(f"Tabela de manuais criada: {MANUALS_TABLE}")
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: crie a tabela `MANUALS_TABLE = f"{CATALOG}.{SCHEMA}.maintenance_manuals"` com ~5
+#    trechos de manuais (colunas id, titulo, conteudo) e habilite Change Data Feed
+#    (`delta.enableChangeDataFeed = true`). Ela é a fonte do índice de Vector Search na célula seguinte.
 
 # COMMAND ----------
 
@@ -306,33 +278,11 @@ except Exception as e:
 
 # COMMAND ----------
 
-import pandas as pd
-
-eval_data = pd.DataFrame({
-    "request": [
-        "Por que a cuba 7 consome muita energia?",
-        "O forno 3 tem problema de qualidade?",
-        "Qual a taxa de falha do forno 1?",
-        "O que fazer com efeito anódico recorrente?",
-    ],
-})
-
-def agent_predict(model_input: pd.DataFrame) -> list[str]:
-    out = []
-    for q in model_input["request"]:
-        res = agent.invoke({"messages": [{"role": "user", "content": q}]})
-        out.append(res["messages"][-1].content)
-    return out
-
-mlflow.set_experiment(f"/Users/{current_user}/cba_rca_agent_eval")
-with mlflow.start_run(run_name="rca_agent_eval"):
-    results = mlflow.evaluate(
-        model=lambda df: agent_predict(df),
-        data=eval_data,
-        model_type="databricks-agent",  # ativa os LLM judges do Mosaic AI Agent Eval
-    )
-    print("Métricas de avaliação do agente:")
-    print(results.metrics)
+# ✍️ EXERCÍCIO — Genie Code: gere o código com o Databricks Assistant (✨ ou Ctrl/Cmd + I) a partir
+# do prompt acima e escreva sua solução nesta célula. Revise com /explain antes de rodar.
+# 💡 Contrato: monte um DataFrame `eval_data` (coluna `request` com perguntas sobre fornos), defina
+#    uma função que chame `agent.invoke(...)` para cada pergunta, e rode `mlflow.evaluate(...)` com
+#    `model_type="databricks-agent"` dentro de um `mlflow.start_run(...)`.
 
 # COMMAND ----------
 
