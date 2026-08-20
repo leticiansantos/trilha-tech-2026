@@ -18,14 +18,6 @@
 # MAGIC Antes de codar, abra o **AI Playground** (barra lateral). Lá você escolhe um Foundation Model,
 # MAGIC **anexa funções UC como tools** e testa o agente **sem escrever código**. É a forma mais
 # MAGIC rápida de prototipar — e de nivelar a turma. Este notebook formaliza o que se prototipa lá.
-# MAGIC
-# MAGIC ---
-# MAGIC ### 💬 Genie Code
-# MAGIC > *"Crie uma função SQL no Unity Catalog `get_furnace_telemetry_stats(furnace_id_in INT)` que
-# MAGIC > retorna as médias de temperatura, amperagem, efeito anódico e vibração desse forno a partir
-# MAGIC > da telemetria. Qualifique o nome da função e da tabela com as variáveis `CATALOG`, `SCHEMA` e
-# MAGIC > `GOLD` dentro do f-string do `spark.sql(...)`, exatamente como nas funções de exemplo
-# MAGIC > `get_furnace_quality` / `get_furnace_failure_rate` logo abaixo."*
 
 # COMMAND ----------
 
@@ -72,6 +64,13 @@ print(f"LLM endpoint   : {LLM_ENDPOINT}")
 # MAGIC - `get_furnace_telemetry_stats(furnace_id)` — estado operacional médio do forno.
 # MAGIC - `get_furnace_quality(furnace_id)` — taxa de defeito e qualidade média do forno.
 # MAGIC - `get_furnace_failure_rate(furnace_id)` — taxa de falha (`is_failure`) do forno.
+# MAGIC
+# MAGIC ### 💬 Genie Code
+# MAGIC > *"Crie uma função SQL no Unity Catalog `get_furnace_telemetry_stats(furnace_id_in INT)` que
+# MAGIC > retorna as médias de temperatura, amperagem, efeito anódico e vibração desse forno a partir
+# MAGIC > da telemetria. Qualifique o nome da função e da tabela com as variáveis `CATALOG`, `SCHEMA` e
+# MAGIC > `GOLD` dentro do f-string do `spark.sql(...)`, exatamente como nas funções de exemplo
+# MAGIC > `get_furnace_quality` / `get_furnace_failure_rate` logo abaixo."*
 
 # COMMAND ----------
 

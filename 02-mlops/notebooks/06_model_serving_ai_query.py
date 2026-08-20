@@ -8,13 +8,6 @@
 # MAGIC **Model Serving endpoint** (REST, com **scale-to-zero** para economizar), fazer
 # MAGIC **inferência em lote** e chamar o modelo direto do **SQL** com `ai_query()` — o que permite
 # MAGIC que analistas (trilha de Insights) consumam previsões sem escrever Python.
-# MAGIC
-# MAGIC ---
-# MAGIC ### 💬 Genie Code
-# MAGIC > *"Crie um endpoint de Model Serving servindo a versão @champion do modelo indicado pela
-# MAGIC > variável `MODEL_NAME` (já definida na célula de configuração com o nome totalmente
-# MAGIC > qualificado no Unity Catalog), com scale-to-zero habilitado. Referencie a variável
-# MAGIC > `MODEL_NAME`; não escreva o nome do modelo à mão."*
 
 # COMMAND ----------
 
@@ -51,6 +44,12 @@ print(f"Endpoint: {ENDPOINT_NAME}")
 # MAGIC
 # MAGIC > A criação leva alguns minutos. Faça isso no início do módulo e siga para a parte de lote
 # MAGIC > enquanto provisiona.
+# MAGIC
+# MAGIC ### 💬 Genie Code
+# MAGIC > *"Crie um endpoint de Model Serving servindo a versão @champion do modelo indicado pela
+# MAGIC > variável `MODEL_NAME` (já definida na configuração, com o nome totalmente qualificado no
+# MAGIC > Unity Catalog), com scale-to-zero habilitado. Referencie a variável `MODEL_NAME`; não
+# MAGIC > escreva o nome do modelo à mão."*
 
 # COMMAND ----------
 

@@ -14,13 +14,6 @@
 # MAGIC
 # MAGIC Trabalhamos aqui com o **regressor de energia** (`furnace_energy_regressor`) do Módulo 3.
 # MAGIC O mesmo vale para o classificador de defeitos.
-# MAGIC
-# MAGIC ---
-# MAGIC ### 💬 Genie Code
-# MAGIC > *"Use o MlflowClient para listar as versões do modelo indicado pela variável `MODEL_NAME`
-# MAGIC > (já definida na célula de configuração com o nome totalmente qualificado
-# MAGIC > `catálogo.schema.furnace_energy_regressor`) e definir o alias `champion` na versão 1.
-# MAGIC > Referencie a variável `MODEL_NAME`; não escreva o nome do modelo à mão."*
 
 # COMMAND ----------
 
@@ -64,6 +57,11 @@ print(f"\nVersão mais recente: {latest_version}")
 # MAGIC %md
 # MAGIC ## 3. Definir o champion
 # MAGIC Se ainda não há champion, promovemos a versão 1 (nosso primeiro modelo em produção).
+# MAGIC
+# MAGIC ### 💬 Genie Code
+# MAGIC > *"Use o MlflowClient para definir o alias `champion` na versão 1 do modelo indicado pela
+# MAGIC > variável `MODEL_NAME` (já definida na configuração). Referencie a variável `MODEL_NAME`;
+# MAGIC > não escreva o nome do modelo à mão."*
 
 # COMMAND ----------
 

@@ -14,12 +14,6 @@
 # MAGIC
 # MAGIC > Requer um cluster com **Databricks Runtime for Machine Learning** (traz scikit-learn,
 # MAGIC > MLflow e XGBoost pré-instalados).
-# MAGIC
-# MAGIC ---
-# MAGIC ### 💬 Genie Code
-# MAGIC > *"Treine uma regressão linear do scikit-learn para prever `energy_kwh_ton` a partir de
-# MAGIC > `temperature_c`, `amperage_ka`, `anode_effect`, `bath_ratio` e `alumina_feed_rate`,
-# MAGIC > com mlflow.autolog ativado."*
 
 # COMMAND ----------
 
@@ -71,6 +65,11 @@ print(f"Treino: {X_train.shape} | Teste: {X_test.shape}")
 # MAGIC ## 3. Baseline — Regressão Linear com `mlflow.autolog()`
 # MAGIC `mlflow.autolog()` instrumenta o scikit-learn: cada `.fit()` vira um **run** com parâmetros,
 # MAGIC métricas de treino e o modelo logado, sem código extra.
+# MAGIC
+# MAGIC ### 💬 Genie Code
+# MAGIC > *"Treine uma regressão linear do scikit-learn para prever `energy_kwh_ton` a partir de
+# MAGIC > `temperature_c`, `amperage_ka`, `anode_effect`, `bath_ratio` e `alumina_feed_rate`,
+# MAGIC > com mlflow.autolog ativado."*
 
 # COMMAND ----------
 
